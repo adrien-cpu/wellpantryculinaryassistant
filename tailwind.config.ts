@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,6 +19,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Poppins', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,6 +65,29 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// WellPantry custom colors
+				wp: {
+					green: {
+						light: '#E3F1E0',
+						DEFAULT: '#68B95C',
+						dark: '#4A8A40'
+					},
+					orange: {
+						light: '#FFF1E0',
+						DEFAULT: '#F9A76F',
+						dark: '#E67632'
+					},
+					brown: {
+						light: '#F2E8DF',
+						DEFAULT: '#9C7E61',
+						dark: '#6B5742'
+					},
+					gray: {
+						light: '#F5F5F5',
+						DEFAULT: '#EBEBEB',
+						dark: '#333333'
+					}
 				}
 			},
 			borderRadius: {
@@ -84,11 +111,21 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
+				},
+				'slide-up': {
+					'0%': { transform: 'translateY(20px)', opacity: '0' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'slide-up': 'slide-up 0.5s ease-out'
 			}
 		}
 	},

@@ -4,6 +4,7 @@ import Layout from "@/components/layout/Layout";
 import GardenHeader from "@/components/garden/GardenHeader";
 import GardenCard from "@/components/garden/GardenCard";
 import GardeningTips from "@/components/garden/GardeningTips";
+import WateringReminders from "@/components/garden/WateringReminders";
 import { gardenPlants } from "@/components/garden/GardenData";
 
 const GardenPage = () => {
@@ -12,6 +13,10 @@ const GardenPage = () => {
       <section className="py-12 bg-wp-gray-light dark:bg-wp-gray-dark">
         <div className="container mx-auto px-4">
           <GardenHeader />
+          
+          <div className="mb-8">
+            <WateringReminders />
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {gardenPlants.map((plant) => (

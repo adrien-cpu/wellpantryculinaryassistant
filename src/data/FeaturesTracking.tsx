@@ -111,7 +111,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Rappels d'arrosage",
         description: "Ne manquez jamais un arrosage",
-        implemented: false
+        implemented: true
       },
       {
         name: "Conseils de jardinage",

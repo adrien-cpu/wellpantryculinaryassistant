@@ -1,38 +1,32 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Pantry from "./pages/Pantry";
-import MealPlanning from "./pages/MealPlanning";
+import { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
 import Recipes from "./pages/Recipes";
 import Garden from "./pages/Garden";
+import MealPlanning from "./pages/MealPlanning";
+import Pantry from "./pages/Pantry";
 import Map from "./pages/Map";
 import NotFound from "./pages/NotFound";
+import Features from "./pages/Features";
 
-const queryClient = new QueryClient();
+function App() {
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+  }, []);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/pantry" element={<Pantry />} />
-          <Route path="/meal-planning" element={<MealPlanning />} />
-          <Route path="/recipes" element={<Recipes />} />
-          <Route path="/garden" element={<Garden />} />
-          <Route path="/map" element={<Map />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/recipes" element={<Recipes />} />
+      <Route path="/garden" element={<Garden />} />
+      <Route path="/meal-planning" element={<MealPlanning />} />
+      <Route path="/pantry" element={<Pantry />} />
+      <Route path="/map" element={<Map />} />
+      <Route path="/features" element={<Features />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
 
 export default App;

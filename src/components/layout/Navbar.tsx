@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -18,13 +17,14 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const navLinks = [
-    { name: "Accueil", path: "/" },
-    { name: "Garde-manger", path: "/pantry" },
-    { name: "Planification", path: "/meal-planning" },
-    { name: "Recettes", path: "/recipes" },
-    { name: "Potager", path: "/garden" },
-    { name: "Carte", path: "/map" }
+  const navigationLinks = [
+    { name: "Accueil", href: "/" },
+    { name: "Recettes", href: "/recipes" },
+    { name: "Potager", href: "/garden" },
+    { name: "Repas", href: "/meal-planning" },
+    { name: "Garde-manger", href: "/pantry" },
+    { name: "Carte", href: "/map" },
+    { name: "Fonctionnalités", href: "/features" },
   ];
 
   return (
@@ -63,10 +63,10 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-                  {navLinks.map((link) => (
-                    <DropdownMenuItem key={link.path} className="cursor-pointer">
+                  {navigationLinks.map((link) => (
+                    <DropdownMenuItem key={link.href} className="cursor-pointer">
                       <Link 
-                        to={link.path} 
+                        to={link.href} 
                         className="w-full"
                         onClick={() => setIsMenuOpen(false)}
                       >
@@ -79,10 +79,10 @@ const Navbar = () => {
             </div>
           ) : (
             <nav className="hidden md:flex items-center space-x-6">
-              {navLinks.map((link) => (
+              {navigationLinks.map((link) => (
                 <Link
-                  key={link.path}
-                  to={link.path}
+                  key={link.href}
+                  to={link.href}
                   className="text-wp-gray-dark hover:text-wp-green transition-colors dark:text-wp-gray-light dark:hover:text-wp-green"
                 >
                   {link.name}

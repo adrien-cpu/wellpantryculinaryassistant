@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PantryItem, StorageType } from "@/types/pantry";
 import { useToast } from "@/hooks/use-toast";
 
@@ -8,6 +8,11 @@ export const usePantryData = () => {
   const [selectedStorage, setSelectedStorage] = useState<StorageType>("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | undefined>(undefined);
+  const [consumptionStats, setConsumptionStats] = useState({
+    consumed: 0,
+    added: 0,
+    expired: 0,
+  });
 
   // Initial pantry data with storage types
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([
@@ -59,7 +64,48 @@ export const usePantryData = () => {
       status: "ok",
       storageType: "wine-cellar"
     },
+    {
+      name: "Fromage Comté",
+      category: "Produits laitiers",
+      quantity: "200g",
+      expiryDate: "10/06/2025",
+      status: "expiring",
+      storageType: "fridge"
+    },
+    {
+      name: "Pommes Golden",
+      category: "Fruits",
+      quantity: "1kg",
+      expiryDate: "15/06/2025",
+      status: "ok",
+      storageType: "fridge"
+    },
+    {
+      name: "Farine de blé",
+      category: "Épicerie",
+      quantity: "1kg",
+      expiryDate: "01/12/2025",
+      status: "ok",
+      storageType: "cabinet"
+    },
+    {
+      name: "Champagne Brut",
+      category: "Boissons alcoolisées",
+      quantity: "750ml",
+      expiryDate: "01/01/2027",
+      status: "ok",
+      storageType: "wine-cellar"
+    },
   ]);
+
+  // Simuler le chargement des statistiques de consommation
+  useEffect(() => {
+    setConsumptionStats({
+      consumed: 32,
+      added: 42,
+      expired: 3,
+    });
+  }, []);
 
   const showComingSoon = () => {
     toast({
@@ -97,6 +143,10 @@ export const usePantryData = () => {
     } else {
       // Add new item
       setPantryItems([...pantryItems, item]);
+      setConsumptionStats(prev => ({
+        ...prev,
+        added: prev.added + 1
+      }));
       toast({
         title: "Aliment ajouté",
         description: `${item.name} a été ajouté au garde-manger.`,
@@ -112,6 +162,10 @@ export const usePantryData = () => {
       duration: 3000,
     });
     setPantryItems(pantryItems.filter(i => i !== item));
+    setConsumptionStats(prev => ({
+      ...prev,
+      consumed: prev.consumed + 1
+    }));
   };
 
   const handleDeleteItem = (item: PantryItem) => {
@@ -123,6 +177,40 @@ export const usePantryData = () => {
     setPantryItems(pantryItems.filter(i => i !== item));
   };
 
+  // Vérifier les dates d'expiration et mettre à jour les statuts
+  const checkExpirations = () => {
+    const today = new Date();
+    const updatedItems = pantryItems.map(item => {
+      const expiryParts = item.expiryDate.split('/');
+      const expiryDate = new Date(
+        parseInt(expiryParts[2]), 
+        parseInt(expiryParts[1]) - 1, 
+        parseInt(expiryParts[0])
+      );
+      
+      // Calculer la différence en jours
+      const diffTime = expiryDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Mettre à jour le statut en fonction de la proximité de la date d'expiration
+      let status = "ok";
+      if (diffDays <= 0) {
+        status = "expired";
+      } else if (diffDays <= 7) {
+        status = "expiring";
+      }
+      
+      return { ...item, status: status as "ok" | "expiring" | "expired" };
+    });
+    
+    setPantryItems(updatedItems);
+  };
+
+  // Vérifier les expirations au chargement
+  useEffect(() => {
+    checkExpirations();
+  }, []);
+
   // Filter items based on selected storage
   const filteredItems = selectedStorage === "all" 
     ? pantryItems
@@ -133,11 +221,12 @@ export const usePantryData = () => {
   const cabinetCount = pantryItems.filter(item => item.storageType === "cabinet").length;
   const wineCellarCount = pantryItems.filter(item => item.storageType === "wine-cellar").length;
 
-  // Count expiring items
+  // Count items by status
   const expiringCount = pantryItems.filter(item => item.status === "expiring").length;
+  const expiredCount = pantryItems.filter(item => item.status === "expired").length;
 
   // Get expiring items
-  const expiringItems = pantryItems.filter(item => item.status === "expiring");
+  const expiringItems = pantryItems.filter(item => item.status === "expiring" || item.status === "expired");
 
   return {
     selectedStorage,
@@ -150,6 +239,8 @@ export const usePantryData = () => {
     cabinetCount,
     wineCellarCount,
     expiringCount,
+    expiredCount,
+    consumptionStats,
     showComingSoon,
     handleStorageChange,
     handleAddItem,
@@ -157,7 +248,8 @@ export const usePantryData = () => {
     handleSaveItem,
     handleConsumeItem,
     handleDeleteItem,
-    setIsFormOpen
+    setIsFormOpen,
+    checkExpirations
   };
 };
 

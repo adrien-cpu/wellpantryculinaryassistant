@@ -34,7 +34,10 @@ const PantryPage = () => {
     <Layout>
       <section className="py-12 bg-wp-gray-light dark:bg-wp-gray-dark">
         <div className="container mx-auto px-4">
-          <PantryHeader onShowComingSoon={showComingSoon} />
+          <PantryHeader 
+            onShowComingSoon={showComingSoon} 
+            onAddItem={handleAddItem}
+          />
           
           <div className="grid grid-cols-1 gap-6">
             {/* Alerte déplacée en haut */}
@@ -51,7 +54,6 @@ const PantryPage = () => {
               selectedStorage={selectedStorage}
               filteredItems={filteredItems}
               onStorageChange={handleStorageChange}
-              onAddItem={handleAddItem}
               onEditItem={handleEditItem}
               onConsumeItem={handleConsumeItem}
               onDeleteItem={handleDeleteItem}

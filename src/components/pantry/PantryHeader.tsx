@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 
 interface PantryHeaderProps {
   onShowComingSoon: () => void;
+  onAddItem: () => void;
 }
 
-const PantryHeader: React.FC<PantryHeaderProps> = ({ onShowComingSoon }) => {
+const PantryHeader: React.FC<PantryHeaderProps> = ({ onShowComingSoon, onAddItem }) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
       <div>
@@ -32,6 +33,13 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ onShowComingSoon }) => {
             <circle cx="12" cy="13" r="3"></circle>
           </svg>
           Reconnaissance d'image
+        </Button>
+        <Button onClick={onAddItem} variant="outline" className="border-wp-green text-wp-green hover:bg-wp-green-light dark:border-wp-green dark:text-wp-green dark:hover:bg-wp-gray-dark">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+            <path d="M12 5v14"></path>
+            <path d="M5 12h14"></path>
+          </svg>
+          Ajout manuel
         </Button>
       </div>
     </div>

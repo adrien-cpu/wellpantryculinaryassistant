@@ -37,6 +37,16 @@ const PantryPage = () => {
           <PantryHeader onShowComingSoon={showComingSoon} />
           
           <div className="grid grid-cols-1 gap-6">
+            {/* Alerte déplacée en haut */}
+            {expiringItems.length > 0 && (
+              <div className="mt-4 mb-2">
+                <PantryAlerts 
+                  expiringItems={expiringItems}
+                  onShowComingSoon={showComingSoon}
+                />
+              </div>
+            )}
+            
             <PantryMainContent 
               selectedStorage={selectedStorage}
               filteredItems={filteredItems}
@@ -47,21 +57,14 @@ const PantryPage = () => {
               onDeleteItem={handleDeleteItem}
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <PantryAlerts 
-                expiringItems={expiringItems}
-                onShowComingSoon={showComingSoon}
-              />
-              
-              <PantryStats
-                itemsCount={pantryItems.length}
-                fridgeCount={fridgeCount}
-                cabinetCount={cabinetCount}
-                wineCellarCount={wineCellarCount}
-                expiringCount={expiringCount}
-                onShowComingSoon={showComingSoon}
-              />
-            </div>
+            <PantryStats
+              itemsCount={pantryItems.length}
+              fridgeCount={fridgeCount}
+              cabinetCount={cabinetCount}
+              wineCellarCount={wineCellarCount}
+              expiringCount={expiringCount}
+              onShowComingSoon={showComingSoon}
+            />
           </div>
         </div>
       </section>

@@ -3,6 +3,19 @@ import { useState, useEffect } from "react";
 import { PantryItem, StorageType } from "@/types/pantry";
 import { useToast } from "@/hooks/use-toast";
 
+// Fonction utilitaire pour convertir des dates au format JJ/MM/AAAA en objets Date
+const parseExpiryDate = (dateStr: string): Date => {
+  const [day, month, year] = dateStr.split('/').map(Number);
+  return new Date(year, month - 1, day);
+};
+
+// Fonction de tri par date d'expiration
+const sortByExpiryDate = (a: PantryItem, b: PantryItem): number => {
+  const dateA = parseExpiryDate(a.expiryDate);
+  const dateB = parseExpiryDate(b.expiryDate);
+  return dateA.getTime() - dateB.getTime();
+};
+
 export const usePantryData = () => {
   const { toast } = useToast();
   const [selectedStorage, setSelectedStorage] = useState<StorageType>("all");
@@ -132,9 +145,10 @@ export const usePantryData = () => {
   const handleSaveItem = (item: PantryItem) => {
     if (editingItem) {
       // Edit existing item
-      setPantryItems(pantryItems.map(i => 
-        i === editingItem ? item : i
-      ));
+      setPantryItems(prevItems => {
+        const updatedItems = prevItems.map(i => i === editingItem ? item : i);
+        return [...updatedItems].sort(sortByExpiryDate);
+      });
       toast({
         title: "Aliment modifié",
         description: `${item.name} a été mis à jour.`,
@@ -142,7 +156,9 @@ export const usePantryData = () => {
       });
     } else {
       // Add new item
-      setPantryItems([...pantryItems, item]);
+      setPantryItems(prevItems => {
+        return [...prevItems, item].sort(sortByExpiryDate);
+      });
       setConsumptionStats(prev => ({
         ...prev,
         added: prev.added + 1
@@ -161,7 +177,10 @@ export const usePantryData = () => {
       description: `${item.name} a été marqué comme consommé.`,
       duration: 3000,
     });
-    setPantryItems(pantryItems.filter(i => i !== item));
+    setPantryItems(prevItems => {
+      const updatedItems = prevItems.filter(i => i !== item);
+      return updatedItems;
+    });
     setConsumptionStats(prev => ({
       ...prev,
       consumed: prev.consumed + 1
@@ -174,19 +193,17 @@ export const usePantryData = () => {
       description: `${item.name} a été retiré du garde-manger.`,
       duration: 3000,
     });
-    setPantryItems(pantryItems.filter(i => i !== item));
+    setPantryItems(prevItems => {
+      const updatedItems = prevItems.filter(i => i !== item);
+      return updatedItems;
+    });
   };
 
   // Vérifier les dates d'expiration et mettre à jour les statuts
   const checkExpirations = () => {
     const today = new Date();
     const updatedItems = pantryItems.map(item => {
-      const expiryParts = item.expiryDate.split('/');
-      const expiryDate = new Date(
-        parseInt(expiryParts[2]), 
-        parseInt(expiryParts[1]) - 1, 
-        parseInt(expiryParts[0])
-      );
+      const expiryDate = parseExpiryDate(item.expiryDate);
       
       // Calculer la différence en jours
       const diffTime = expiryDate.getTime() - today.getTime();
@@ -203,18 +220,18 @@ export const usePantryData = () => {
       return { ...item, status: status as "ok" | "expiring" | "expired" };
     });
     
-    setPantryItems(updatedItems);
+    setPantryItems(updatedItems.sort(sortByExpiryDate));
   };
 
-  // Vérifier les expirations au chargement
+  // Vérifier les expirations au chargement et trier par date d'expiration
   useEffect(() => {
     checkExpirations();
   }, []);
 
-  // Filter items based on selected storage
+  // Filter items based on selected storage and sort by expiry date
   const filteredItems = selectedStorage === "all" 
-    ? pantryItems
-    : pantryItems.filter(item => item.storageType === selectedStorage);
+    ? [...pantryItems].sort(sortByExpiryDate)
+    : [...pantryItems.filter(item => item.storageType === selectedStorage)].sort(sortByExpiryDate);
 
   // Count items in each storage location
   const fridgeCount = pantryItems.filter(item => item.storageType === "fridge").length;
@@ -225,8 +242,10 @@ export const usePantryData = () => {
   const expiringCount = pantryItems.filter(item => item.status === "expiring").length;
   const expiredCount = pantryItems.filter(item => item.status === "expired").length;
 
-  // Get expiring items
-  const expiringItems = pantryItems.filter(item => item.status === "expiring" || item.status === "expired");
+  // Get expiring items and sort them by expiry date
+  const expiringItems = [...pantryItems.filter(
+    item => item.status === "expiring" || item.status === "expired"
+  )].sort(sortByExpiryDate);
 
   return {
     selectedStorage,

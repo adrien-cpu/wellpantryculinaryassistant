@@ -34,7 +34,7 @@ const PantryAlerts: React.FC<PantryAlertsProps> = ({ expiringItems, onShowComing
               expiringItems.map((item, index) => (
                 <div key={index} className="flex justify-between items-center p-3 bg-wp-orange-light rounded-md">
                   <div>
-                    <p className="font-medium">{item.name}</p>
+                    <p className="font-medium text-black dark:text-white">{item.name}</p>
                     <p className="text-sm text-wp-gray-dark">Expire le {item.expiryDate}</p>
                   </div>
                   <Button 

@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PantryItem, StorageType } from "@/types/pantry";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,6 +20,11 @@ export const usePantryData = () => {
   const [selectedStorage, setSelectedStorage] = useState<StorageType>("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Tous");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [sortField, setSortField] = useState<keyof PantryItem>("expiryDate");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [consumptionStats, setConsumptionStats] = useState({
     consumed: 0,
     added: 0,
@@ -132,6 +136,33 @@ export const usePantryData = () => {
     setSelectedStorage(storage);
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setSelectedStatus(value);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("Tous");
+    setSelectedStatus("all");
+  };
+
+  const handleSort = (field: keyof PantryItem) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
   const handleAddItem = () => {
     setEditingItem(undefined);
     setIsFormOpen(true);
@@ -228,10 +259,56 @@ export const usePantryData = () => {
     checkExpirations();
   }, []);
 
-  // Filter items based on selected storage and sort by expiry date
-  const filteredItems = selectedStorage === "all" 
-    ? [...pantryItems].sort(sortByExpiryDate)
-    : [...pantryItems.filter(item => item.storageType === selectedStorage)].sort(sortByExpiryDate);
+  // Filter and sort items with memoization for performance
+  const filteredAndSortedItems = useMemo(() => {
+    let items = [...pantryItems];
+
+    // Filter by storage type
+    if (selectedStorage !== "all") {
+      items = items.filter(item => item.storageType === selectedStorage);
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      items = items.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== "Tous") {
+      items = items.filter(item => item.category === selectedCategory);
+    }
+
+    // Filter by status
+    if (selectedStatus !== "all") {
+      items = items.filter(item => item.status === selectedStatus);
+    }
+
+    // Sort items
+    items.sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      // Special handling for date sorting
+      if (sortField === "expiryDate") {
+        aValue = parseExpiryDate(a.expiryDate).getTime();
+        bValue = parseExpiryDate(b.expiryDate).getTime();
+      }
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return items;
+  }, [pantryItems, selectedStorage, searchTerm, selectedCategory, selectedStatus, sortField, sortDirection]);
 
   // Count items in each storage location
   const fridgeCount = pantryItems.filter(item => item.storageType === "fridge").length;
@@ -252,7 +329,7 @@ export const usePantryData = () => {
     isFormOpen,
     editingItem,
     pantryItems,
-    filteredItems,
+    filteredItems: filteredAndSortedItems,
     expiringItems,
     fridgeCount,
     cabinetCount,
@@ -260,8 +337,18 @@ export const usePantryData = () => {
     expiringCount,
     expiredCount,
     consumptionStats,
+    searchTerm,
+    selectedCategory,
+    selectedStatus,
+    sortField,
+    sortDirection,
     showComingSoon,
     handleStorageChange,
+    handleSearchChange,
+    handleCategoryChange,
+    handleStatusChange,
+    handleClearFilters,
+    handleSort,
     handleAddItem,
     handleEditItem,
     handleSaveItem,

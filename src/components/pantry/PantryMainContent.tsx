@@ -4,11 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PantryItem, StorageType } from "@/types/pantry";
 import StorageSelector from "./StorageSelector";
 import PantryItemsTable from "./PantryItemsTable";
+import PantrySearchAndFilters from "./PantrySearchAndFilters";
 
 interface PantryMainContentProps {
   selectedStorage: StorageType;
   filteredItems: PantryItem[];
+  searchTerm: string;
+  selectedCategory: string;
+  selectedStatus: string;
+  sortField: keyof PantryItem;
+  sortDirection: "asc" | "desc";
   onStorageChange: (storage: StorageType) => void;
+  onSearchChange: (value: string) => void;
+  onCategoryChange: (value: string) => void;
+  onStatusChange: (value: string) => void;
+  onClearFilters: () => void;
+  onSort: (field: keyof PantryItem) => void;
   onEditItem: (item: PantryItem) => void;
   onConsumeItem: (item: PantryItem) => void;
   onDeleteItem: (item: PantryItem) => void;
@@ -17,7 +28,17 @@ interface PantryMainContentProps {
 const PantryMainContent: React.FC<PantryMainContentProps> = ({
   selectedStorage,
   filteredItems,
+  searchTerm,
+  selectedCategory,
+  selectedStatus,
+  sortField,
+  sortDirection,
   onStorageChange,
+  onSearchChange,
+  onCategoryChange,
+  onStatusChange,
+  onClearFilters,
+  onSort,
   onEditItem,
   onConsumeItem,
   onDeleteItem,
@@ -34,8 +55,21 @@ const PantryMainContent: React.FC<PantryMainContentProps> = ({
           onStorageChange={onStorageChange}
         />
 
+        <PantrySearchAndFilters
+          searchTerm={searchTerm}
+          onSearchChange={onSearchChange}
+          selectedCategory={selectedCategory}
+          onCategoryChange={onCategoryChange}
+          selectedStatus={selectedStatus}
+          onStatusChange={onStatusChange}
+          onClearFilters={onClearFilters}
+        />
+
         <PantryItemsTable 
           items={filteredItems}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSort={onSort}
           onEdit={onEditItem}
           onConsume={onConsumeItem}
           onDelete={onDeleteItem}

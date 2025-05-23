@@ -20,8 +20,18 @@ const PantryPage = () => {
     cabinetCount,
     wineCellarCount,
     expiringCount,
+    searchTerm,
+    selectedCategory,
+    selectedStatus,
+    sortField,
+    sortDirection,
     showComingSoon,
     handleStorageChange,
+    handleSearchChange,
+    handleCategoryChange,
+    handleStatusChange,
+    handleClearFilters,
+    handleSort,
     handleAddItem,
     handleEditItem,
     handleSaveItem,
@@ -53,7 +63,17 @@ const PantryPage = () => {
             <PantryMainContent 
               selectedStorage={selectedStorage}
               filteredItems={filteredItems}
+              searchTerm={searchTerm}
+              selectedCategory={selectedCategory}
+              selectedStatus={selectedStatus}
+              sortField={sortField}
+              sortDirection={sortDirection}
               onStorageChange={handleStorageChange}
+              onSearchChange={handleSearchChange}
+              onCategoryChange={handleCategoryChange}
+              onStatusChange={handleStatusChange}
+              onClearFilters={handleClearFilters}
+              onSort={handleSort}
               onEditItem={handleEditItem}
               onConsumeItem={handleConsumeItem}
               onDeleteItem={handleDeleteItem}

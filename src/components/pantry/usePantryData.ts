@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect, useMemo } from "react";
 import { PantryItem, StorageType } from "@/types/pantry";
 import { useToast } from "@/hooks/use-toast";
@@ -289,8 +290,8 @@ export const usePantryData = () => {
 
     // Sort items
     items.sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
+      let aValue: string | number = a[sortField];
+      let bValue: string | number = b[sortField];
 
       // Special handling for date sorting
       if (sortField === "expiryDate") {
@@ -361,3 +362,4 @@ export const usePantryData = () => {
 };
 
 export default usePantryData;
+

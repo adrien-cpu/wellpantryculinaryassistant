@@ -5,7 +5,7 @@ import { sortByExpiryDate, getExpirationStatus } from "@/utils/pantry/dateUtils"
 
 interface UsePantryActionsProps {
   pantryItems: PantryItem[];
-  setPantryItems: (items: PantryItem[]) => void;
+  setPantryItems: (items: PantryItem[] | ((prevItems: PantryItem[]) => PantryItem[])) => void;
   setEditingItem: (item: PantryItem | undefined) => void;
   setIsFormOpen: (isOpen: boolean) => void;
   consumptionStats: {
@@ -17,7 +17,15 @@ interface UsePantryActionsProps {
     consumed: number;
     added: number;
     expired: number;
-  }) => void;
+  } | ((prev: {
+    consumed: number;
+    added: number;
+    expired: number;
+  }) => {
+    consumed: number;
+    added: number;
+    expired: number;
+  })) => void;
 }
 
 export const usePantryActions = ({
@@ -51,7 +59,7 @@ export const usePantryActions = ({
   const handleSaveItem = (item: PantryItem) => {
     if (pantryItems.find(i => i === item)) {
       // Edit existing item
-      setPantryItems(prevItems => {
+      setPantryItems((prevItems: PantryItem[]) => {
         const updatedItems = prevItems.map(i => i === item ? { ...item } : i);
         return [...updatedItems].sort(sortByExpiryDate);
       });
@@ -62,10 +70,14 @@ export const usePantryActions = ({
       });
     } else {
       // Add new item
-      setPantryItems(prevItems => {
+      setPantryItems((prevItems: PantryItem[]) => {
         return [...prevItems, item].sort(sortByExpiryDate);
       });
-      setConsumptionStats(prev => ({
+      setConsumptionStats((prev: {
+        consumed: number;
+        added: number;
+        expired: number;
+      }) => ({
         ...prev,
         added: prev.added + 1
       }));
@@ -83,11 +95,15 @@ export const usePantryActions = ({
       description: `${item.name} a été marqué comme consommé.`,
       duration: 3000,
     });
-    setPantryItems(prevItems => {
+    setPantryItems((prevItems: PantryItem[]) => {
       const updatedItems = prevItems.filter(i => i !== item);
       return updatedItems;
     });
-    setConsumptionStats(prev => ({
+    setConsumptionStats((prev: {
+      consumed: number;
+      added: number;
+      expired: number;
+    }) => ({
       ...prev,
       consumed: prev.consumed + 1
     }));
@@ -99,7 +115,7 @@ export const usePantryActions = ({
       description: `${item.name} a été retiré du garde-manger.`,
       duration: 3000,
     });
-    setPantryItems(prevItems => {
+    setPantryItems((prevItems: PantryItem[]) => {
       const updatedItems = prevItems.filter(i => i !== item);
       return updatedItems;
     });

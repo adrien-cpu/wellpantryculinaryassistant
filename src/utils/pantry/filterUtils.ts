@@ -1,6 +1,7 @@
 
 import { PantryItem, StorageType } from "@/types/pantry";
-import { parseExpiryDate } from "./dateUtils";
+import { parseExpiryDate, getExpirationStatus } from "./dateUtils";
+import { getExpirationUrgency } from "./smartSuggestions";
 
 export const filterPantryItems = (
   pantryItems: PantryItem[],
@@ -41,10 +42,11 @@ export const filterPantryItems = (
     let aValue: string | number = a[sortField];
     let bValue: string | number = b[sortField];
 
-    // Special handling for date sorting
+    // Special handling for date sorting with urgency
     if (sortField === "expiryDate") {
-      aValue = parseExpiryDate(a.expiryDate).getTime();
-      bValue = parseExpiryDate(b.expiryDate).getTime();
+      // Option pour trier par urgence d'expiration
+      aValue = getExpirationUrgency(a.expiryDate);
+      bValue = getExpirationUrgency(b.expiryDate);
     }
 
     if (typeof aValue === "string" && typeof bValue === "string") {
@@ -78,4 +80,10 @@ export const getStorageCounts = (pantryItems: PantryItem[]) => {
     expiringCount,
     expiredCount
   };
+};
+
+// Nouvelle fonction pour obtenir des catégories uniques
+export const getUniqueCategories = (pantryItems: PantryItem[]): string[] => {
+  const categories = [...new Set(pantryItems.map(item => item.category))];
+  return ["Tous", ...categories.sort()];
 };

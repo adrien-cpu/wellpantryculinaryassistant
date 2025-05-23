@@ -6,6 +6,7 @@ import PantryHeader from "@/components/pantry/PantryHeader";
 import PantryMainContent from "@/components/pantry/PantryMainContent";
 import PantryAlerts from "@/components/pantry/PantryAlerts";
 import PantryStats from "@/components/pantry/PantryStats";
+import SmartSuggestionsCard from "@/components/pantry/SmartSuggestionsCard";
 import usePantryData from "@/components/pantry/usePantryData";
 
 const PantryPage = () => {
@@ -16,6 +17,7 @@ const PantryPage = () => {
     pantryItems,
     filteredItems,
     expiringItems,
+    smartSuggestions,
     fridgeCount,
     cabinetCount,
     wineCellarCount,
@@ -37,6 +39,7 @@ const PantryPage = () => {
     handleSaveItem,
     handleConsumeItem,
     handleDeleteItem,
+    handleSuggestionAction,
     setIsFormOpen
   } = usePantryData();
 
@@ -50,6 +53,12 @@ const PantryPage = () => {
           />
           
           <div className="grid grid-cols-1 gap-6">
+            {/* Suggestions intelligentes */}
+            <SmartSuggestionsCard 
+              suggestions={smartSuggestions}
+              onActionClick={handleSuggestionAction}
+            />
+            
             {/* Alerte déplacée en haut */}
             {expiringItems.length > 0 && (
               <div className="mt-4 mb-2">

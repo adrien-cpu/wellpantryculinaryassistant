@@ -5,9 +5,12 @@ import { initialPantryItems } from "@/data/initialPantryData";
 import { usePantryState } from "@/hooks/usePantryState";
 import { usePantryActions } from "@/hooks/usePantryActions";
 import { filterPantryItems, getExpiringItems, getStorageCounts } from "@/utils/pantry/filterUtils";
-import { sortByExpiryDate } from "@/utils/pantry/dateUtils";
+import { generateSmartSuggestions, SmartSuggestion } from "@/utils/pantry/smartSuggestions";
+import { getExpirationStatus } from "@/utils/pantry/dateUtils";
+import { useToast } from "@/hooks/use-toast";
 
 export const usePantryData = () => {
+  const { toast } = useToast();
   const {
     pantryItems,
     setPantryItems,
@@ -48,10 +51,22 @@ export const usePantryData = () => {
     setConsumptionStats
   });
 
-  // Vérifier les expirations au chargement et trier par date d'expiration
+  // Vérifier les expirations et mettre à jour les statuts
   useEffect(() => {
-    checkExpirations();
-  }, []);
+    const updatedItems = pantryItems.map(item => ({
+      ...item,
+      status: getExpirationStatus(item.expiryDate)
+    }));
+    
+    // Mettre à jour seulement si il y a des changements
+    const hasChanges = updatedItems.some((item, index) => 
+      item.status !== pantryItems[index]?.status
+    );
+    
+    if (hasChanges) {
+      setPantryItems(updatedItems);
+    }
+  }, [pantryItems, setPantryItems]);
 
   // Filter and sort items with memoization for performance
   const filteredAndSortedItems = useMemo(() => {
@@ -66,9 +81,14 @@ export const usePantryData = () => {
     );
   }, [pantryItems, selectedStorage, searchTerm, selectedCategory, selectedStatus, sortField, sortDirection]);
 
-  // Get expiring items and sort them by expiry date
+  // Get expiring items
   const expiringItems = useMemo(() => {
-    return [...getExpiringItems(pantryItems)].sort(sortByExpiryDate);
+    return getExpiringItems(pantryItems);
+  }, [pantryItems]);
+
+  // Generate smart suggestions
+  const smartSuggestions = useMemo(() => {
+    return generateSmartSuggestions(pantryItems);
   }, [pantryItems]);
 
   // Get counts for storage locations and statuses
@@ -80,6 +100,31 @@ export const usePantryData = () => {
     expiredCount
   } = useMemo(() => getStorageCounts(pantryItems), [pantryItems]);
 
+  // Handle smart suggestion actions
+  const handleSuggestionAction = (suggestion: SmartSuggestion) => {
+    switch (suggestion.type) {
+      case 'urgent':
+        toast({
+          title: "Aliments urgents détectés",
+          description: "Consultez les aliments marqués en rouge dans votre liste",
+          duration: 4000,
+        });
+        break;
+      case 'recipe':
+        showComingSoon();
+        break;
+      case 'storage':
+        toast({
+          title: "Conseil de stockage",
+          description: "Vérifiez l'organisation de vos espaces de stockage",
+          duration: 3000,
+        });
+        break;
+      default:
+        showComingSoon();
+    }
+  };
+
   return {
     selectedStorage,
     isFormOpen,
@@ -87,6 +132,7 @@ export const usePantryData = () => {
     pantryItems,
     filteredItems: filteredAndSortedItems,
     expiringItems,
+    smartSuggestions,
     fridgeCount,
     cabinetCount,
     wineCellarCount,
@@ -110,6 +156,7 @@ export const usePantryData = () => {
     handleSaveItem,
     handleConsumeItem,
     handleDeleteItem,
+    handleSuggestionAction,
     setIsFormOpen,
     checkExpirations
   };

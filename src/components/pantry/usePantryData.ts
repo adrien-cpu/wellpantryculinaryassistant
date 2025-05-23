@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from "react";
 import { PantryItem, StorageType } from "@/types/pantry";
 import { useToast } from "@/hooks/use-toast";
@@ -241,14 +242,14 @@ export const usePantryData = () => {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       // Mettre à jour le statut en fonction de la proximité de la date d'expiration
-      let status = "ok";
+      let status: "ok" | "expiring" | "expired" = "ok";
       if (diffDays <= 0) {
         status = "expired";
       } else if (diffDays <= 7) {
         status = "expiring";
       }
       
-      return { ...item, status: status as "ok" | "expiring" | "expired" };
+      return { ...item, status };
     });
     
     setPantryItems(updatedItems.sort(sortByExpiryDate));

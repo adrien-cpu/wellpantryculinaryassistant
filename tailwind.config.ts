@@ -66,7 +66,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// WellPantry custom colors
+				// WellPantry custom colors - couleurs améliorées pour la lisibilité
 				wp: {
 					green: {
 						light: '#E3F1E0',
@@ -80,8 +80,13 @@ export default {
 					},
 					brown: {
 						light: '#F2E8DF',
-						DEFAULT: '#9C7E61',
-						dark: '#6B5742'
+						DEFAULT: '#D4A574', // Couleur plus claire pour les lipides
+						dark: '#8B6914' // Couleur plus contrastée
+					},
+					purple: {
+						light: '#F3E8FF',
+						DEFAULT: '#A855F7', // Nouvelle couleur pour les calories
+						dark: '#7C3AED'
 					},
 					gray: {
 						light: '#F5F5F5',

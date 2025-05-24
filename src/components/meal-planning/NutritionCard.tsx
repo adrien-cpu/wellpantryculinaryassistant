@@ -98,7 +98,7 @@ const NutritionCard: React.FC<NutritionCardProps> = ({
             )}
           </div>
           <div className="text-center p-2 bg-wp-gray-light dark:bg-wp-gray-dark rounded">
-            <div className="font-medium text-wp-brown">{nutrition.fat}g</div>
+            <div className="font-medium text-wp-brown-dark">{nutrition.fat}g</div>
             <div className="text-xs text-wp-gray-dark">Lipides</div>
             {type === 'daily' && (
               <div className="text-xs text-wp-gray-dark">

@@ -70,8 +70,8 @@ const WeeklyNutritionSummary: React.FC<WeeklyNutritionSummaryProps> = ({
             <div className="text-lg font-semibold text-wp-orange">{weeklyAverage.carbs}g</div>
             <div className="text-sm text-wp-gray-dark">Glucides/jour</div>
           </div>
-          <div className="text-center p-3 bg-wp-brown/10 rounded-lg">
-            <div className="text-lg font-semibold text-wp-brown">{weeklyAverage.fat}g</div>
+          <div className="text-center p-3 bg-wp-brown-light rounded-lg">
+            <div className="text-lg font-semibold text-wp-brown-dark">{weeklyAverage.fat}g</div>
             <div className="text-sm text-wp-gray-dark">Lipides/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-green-light rounded-lg">

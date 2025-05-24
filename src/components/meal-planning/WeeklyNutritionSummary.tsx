@@ -31,7 +31,7 @@ const WeeklyNutritionSummary: React.FC<WeeklyNutritionSummaryProps> = ({
   const getTrendColor = (percentage: number) => {
     if (percentage > 105) return "text-red-600";
     if (percentage < 95) return "text-orange-600";
-    return "text-wp-purple"; // Nouvelle couleur pour les calories
+    return "text-wp-purple"; // Couleur violette pour les calories
   };
 
   return (

@@ -27,9 +27,9 @@ const NutritionCard: React.FC<NutritionCardProps> = ({
     if (type === 'daily') {
       if (percentage < 80) return 'text-orange-600';
       if (percentage > 120) return 'text-red-600';
-      return 'text-wp-purple'; // Nouvelle couleur pour les calories
+      return 'text-wp-purple'; // Couleur violette pour les calories
     }
-    return 'text-wp-gray-dark';
+    return 'text-wp-purple'; // Couleur violette pour les calories même pour les repas
   };
 
   const getStatusBadge = (percentage: number) => {

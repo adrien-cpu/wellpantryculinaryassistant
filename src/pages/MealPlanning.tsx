@@ -10,9 +10,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useNutritionData } from "@/hooks/useNutritionData";
+import NutritionCard from "@/components/meal-planning/NutritionCard";
+import WeeklyNutritionSummary from "@/components/meal-planning/WeeklyNutritionSummary";
 
 const MealPlanningPage = () => {
   const { toast } = useToast();
+  const { userGoals, calculateDayTotal, getWeeklyAverage } = useNutritionData();
 
   const showComingSoon = () => {
     toast({
@@ -69,6 +73,8 @@ const MealPlanningPage = () => {
     { name: "Épicerie", items: ["Riz basmati (500g)", "Pâtes complètes (500g)", "Quinoa (250g)", "Sauce pesto (1 pot)"] },
   ];
 
+  const weeklyAverage = getWeeklyAverage(weekDays);
+
   return (
     <Layout>
       <section className="py-12 bg-wp-gray-light dark:bg-wp-gray-dark">
@@ -77,7 +83,7 @@ const MealPlanningPage = () => {
             <div>
               <h1 className="text-3xl font-bold text-wp-green-dark dark:text-wp-green mb-2">Planification des repas</h1>
               <p className="text-wp-gray-dark dark:text-wp-gray-light">
-                Organisez vos repas et générez automatiquement vos listes de courses
+                Organisez vos repas avec un suivi nutritionnel complet et générez automatiquement vos listes de courses
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-wrap gap-3">
@@ -97,6 +103,14 @@ const MealPlanningPage = () => {
               </Button>
             </div>
           </div>
+
+          {/* Résumé nutritionnel hebdomadaire */}
+          <div className="mb-8">
+            <WeeklyNutritionSummary 
+              weeklyAverage={weeklyAverage}
+              goals={userGoals}
+            />
+          </div>
           
           <Tabs defaultValue="planning" className="w-full">
             <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -108,38 +122,62 @@ const MealPlanningPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>Planning hebdomadaire</CardTitle>
-                  <CardDescription>Semaine du 19 au 25 mai 2025</CardDescription>
+                  <CardDescription>Semaine du 19 au 25 mai 2025 - Suivi nutritionnel détaillé</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
-                    {weekDays.map((day) => (
-                      <div key={day} className="border-b border-wp-gray pb-4 last:border-b-0 last:pb-0">
-                        <h3 className="text-lg font-medium text-wp-green-dark dark:text-wp-green mb-2">{day}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                            <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">Petit-déjeuner</div>
-                            <p className="text-wp-gray-dark dark:text-wp-gray-light">{meals[day].breakfast}</p>
-                            <Button variant="ghost" size="sm" onClick={showComingSoon} className="mt-2 h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
-                              <span className="text-xs">Modifier</span>
-                            </Button>
-                          </div>
-                          <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                            <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">Déjeuner</div>
-                            <p className="text-wp-gray-dark dark:text-wp-gray-light">{meals[day].lunch}</p>
-                            <Button variant="ghost" size="sm" onClick={showComingSoon} className="mt-2 h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
-                              <span className="text-xs">Modifier</span>
-                            </Button>
-                          </div>
-                          <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                            <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">Dîner</div>
-                            <p className="text-wp-gray-dark dark:text-wp-gray-light">{meals[day].dinner}</p>
-                            <Button variant="ghost" size="sm" onClick={showComingSoon} className="mt-2 h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
-                              <span className="text-xs">Modifier</span>
-                            </Button>
+                  <div className="space-y-8">
+                    {weekDays.map((day) => {
+                      const dayNutrition = calculateDayTotal(day);
+                      return (
+                        <div key={day} className="border-b border-wp-gray pb-6 last:border-b-0 last:pb-0">
+                          <div className="flex flex-col lg:flex-row gap-6">
+                            {/* Planning des repas */}
+                            <div className="flex-1">
+                              <h3 className="text-lg font-medium text-wp-green-dark dark:text-wp-green mb-4">{day}</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
+                                  <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
+                                    Petit-déjeuner • {dayNutrition.breakfast.calories} cal
+                                  </div>
+                                  <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">{meals[day].breakfast}</p>
+                                  <Button variant="ghost" size="sm" onClick={showComingSoon} className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
+                                    <span className="text-xs">Modifier</span>
+                                  </Button>
+                                </div>
+                                <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
+                                  <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
+                                    Déjeuner • {dayNutrition.lunch.calories} cal
+                                  </div>
+                                  <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">{meals[day].lunch}</p>
+                                  <Button variant="ghost" size="sm" onClick={showComingSoon} className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
+                                    <span className="text-xs">Modifier</span>
+                                  </Button>
+                                </div>
+                                <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
+                                  <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
+                                    Dîner • {dayNutrition.dinner.calories} cal
+                                  </div>
+                                  <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">{meals[day].dinner}</p>
+                                  <Button variant="ghost" size="sm" onClick={showComingSoon} className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
+                                    <span className="text-xs">Modifier</span>
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Résumé nutritionnel du jour */}
+                            <div className="lg:w-80">
+                              <NutritionCard
+                                nutrition={dayNutrition.total}
+                                goals={userGoals}
+                                title={`Total ${day}`}
+                                type="daily"
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
@@ -149,7 +187,7 @@ const MealPlanningPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>Liste de courses</CardTitle>
-                  <CardDescription>Générée automatiquement à partir de votre planning</CardDescription>
+                  <CardDescription>Générée automatiquement à partir de votre planning nutritionnel</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">

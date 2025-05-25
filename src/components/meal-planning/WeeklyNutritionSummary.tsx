@@ -47,7 +47,7 @@ const WeeklyNutritionSummary: React.FC<WeeklyNutritionSummaryProps> = ({
           <div className={`text-3xl font-bold ${getTrendColor(caloriePercentage)}`}>
             {weeklyAverage.calories}
           </div>
-          <div className="text-sm text-wp-gray-dark">calories/jour en moyenne</div>
+          <div className="text-sm text-gray-600 dark:text-gray-300">calories/jour en moyenne</div>
           <div className={`text-sm ${getTrendColor(caloriePercentage)}`}>
             {getTrendText(caloriePercentage)}
           </div>
@@ -64,19 +64,19 @@ const WeeklyNutritionSummary: React.FC<WeeklyNutritionSummaryProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-wp-green-light rounded-lg">
             <div className="text-lg font-semibold text-wp-green">{weeklyAverage.protein}g</div>
-            <div className="text-sm text-wp-gray-dark">Protéines/jour</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Protéines/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-orange-light rounded-lg">
             <div className="text-lg font-semibold text-wp-orange">{weeklyAverage.carbs}g</div>
-            <div className="text-sm text-wp-gray-dark">Glucides/jour</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Glucides/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-brown-light rounded-lg">
             <div className="text-lg font-semibold text-wp-brown-dark">{weeklyAverage.fat}g</div>
-            <div className="text-sm text-wp-gray-dark">Lipides/jour</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Lipides/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-green-light rounded-lg">
             <div className="text-lg font-semibold text-wp-green-dark">{weeklyAverage.fiber}g</div>
-            <div className="text-sm text-wp-gray-dark">Fibres/jour</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Fibres/jour</div>
           </div>
         </div>
       </CardContent>

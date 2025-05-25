@@ -57,9 +57,9 @@ const NutritionCard: React.FC<NutritionCardProps> = ({
           <div className={`text-2xl font-bold ${getStatusColor(caloriePercentage)}`}>
             {nutrition.calories}
           </div>
-          <div className="text-sm text-wp-gray-dark">calories</div>
+          <div className="text-sm text-gray-600 dark:text-gray-300">calories</div>
           {type === 'daily' && (
-            <div className="text-xs text-wp-gray-dark mt-1">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Objectif: {goals.dailyCalories} cal
             </div>
           )}
@@ -81,34 +81,34 @@ const NutritionCard: React.FC<NutritionCardProps> = ({
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="text-center p-2 bg-wp-gray-light dark:bg-wp-gray-dark rounded">
             <div className="font-medium text-wp-green">{nutrition.protein}g</div>
-            <div className="text-xs text-wp-gray-dark">Protéines</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Protéines</div>
             {type === 'daily' && (
-              <div className="text-xs text-wp-gray-dark">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 /{Math.round(proteinGoal)}g
               </div>
             )}
           </div>
           <div className="text-center p-2 bg-wp-gray-light dark:bg-wp-gray-dark rounded">
             <div className="font-medium text-wp-orange">{nutrition.carbs}g</div>
-            <div className="text-xs text-wp-gray-dark">Glucides</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Glucides</div>
             {type === 'daily' && (
-              <div className="text-xs text-wp-gray-dark">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 /{Math.round(carbsGoal)}g
               </div>
             )}
           </div>
           <div className="text-center p-2 bg-wp-gray-light dark:bg-wp-gray-dark rounded">
             <div className="font-medium text-wp-brown-dark">{nutrition.fat}g</div>
-            <div className="text-xs text-wp-gray-dark">Lipides</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Lipides</div>
             {type === 'daily' && (
-              <div className="text-xs text-wp-gray-dark">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 /{Math.round(fatGoal)}g
               </div>
             )}
           </div>
           <div className="text-center p-2 bg-wp-gray-light dark:bg-wp-gray-dark rounded">
             <div className="font-medium text-wp-green-dark">{nutrition.fiber}g</div>
-            <div className="text-xs text-wp-gray-dark">Fibres</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Fibres</div>
           </div>
         </div>
       </CardContent>

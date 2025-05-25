@@ -64,19 +64,19 @@ const WeeklyNutritionSummary: React.FC<WeeklyNutritionSummaryProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-wp-green-light rounded-lg">
             <div className="text-lg font-semibold text-wp-green">{weeklyAverage.protein}g</div>
-            <div className="text-sm text-gray-700 dark:text-gray-200">Protéines/jour</div>
+            <div className="text-sm text-gray-800 dark:text-gray-700 font-medium">Protéines/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-orange-light rounded-lg">
             <div className="text-lg font-semibold text-wp-orange">{weeklyAverage.carbs}g</div>
-            <div className="text-sm text-gray-700 dark:text-gray-200">Glucides/jour</div>
+            <div className="text-sm text-gray-800 dark:text-gray-700 font-medium">Glucides/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-brown-light rounded-lg">
             <div className="text-lg font-semibold text-wp-brown-dark">{weeklyAverage.fat}g</div>
-            <div className="text-sm text-gray-700 dark:text-gray-200">Lipides/jour</div>
+            <div className="text-sm text-gray-800 dark:text-gray-700 font-medium">Lipides/jour</div>
           </div>
           <div className="text-center p-3 bg-wp-green-light rounded-lg">
             <div className="text-lg font-semibold text-wp-green-dark">{weeklyAverage.fiber}g</div>
-            <div className="text-sm text-gray-700 dark:text-gray-200">Fibres/jour</div>
+            <div className="text-sm text-gray-800 dark:text-gray-700 font-medium">Fibres/jour</div>
           </div>
         </div>
       </CardContent>

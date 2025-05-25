@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,13 +10,23 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useNutritionData } from "@/hooks/useNutritionData";
+import { useMealPlanning } from "@/hooks/useMealPlanning";
 import NutritionCard from "@/components/meal-planning/NutritionCard";
 import WeeklyNutritionSummary from "@/components/meal-planning/WeeklyNutritionSummary";
 import NutritionLegend from "@/components/meal-planning/NutritionLegend";
+import MealGenerationDialog from "@/components/meal-planning/MealGenerationDialog";
+import MealEditDialog from "@/components/meal-planning/MealEditDialog";
 
 const MealPlanningPage = () => {
   const { toast } = useToast();
   const { userGoals, calculateDayTotal, getWeeklyAverage } = useNutritionData();
+  const { meals, updateMeal, replaceAllMeals } = useMealPlanning();
+  
+  const [editingMeal, setEditingMeal] = useState<{
+    day: string;
+    type: 'breakfast' | 'lunch' | 'dinner';
+    meal: { name: string; description?: string };
+  } | null>(null);
 
   const showComingSoon = () => {
     toast({
@@ -28,44 +37,6 @@ const MealPlanningPage = () => {
   };
 
   const weekDays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-  
-  const meals = {
-    "Lundi": {
-      breakfast: "Smoothie aux fruits rouges et granola",
-      lunch: "Salade composée avec quinoa et légumes grillés",
-      dinner: "Risotto aux champignons"
-    },
-    "Mardi": {
-      breakfast: "Porridge aux pommes et cannelle",
-      lunch: "Wrap au poulet et avocat",
-      dinner: "Lasagnes aux légumes"
-    },
-    "Mercredi": {
-      breakfast: "Œufs brouillés et tartine d'avocat",
-      lunch: "Buddha bowl au tofu et légumes croquants",
-      dinner: "Curry de légumes et riz basmati"
-    },
-    "Jeudi": {
-      breakfast: "Yaourt grec, fruits frais et miel",
-      lunch: "Salade niçoise",
-      dinner: "Pâtes complètes sauce pesto et légumes rôtis"
-    },
-    "Vendredi": {
-      breakfast: "Pancakes aux myrtilles",
-      lunch: "Quiche aux épinards et chèvre",
-      dinner: "Tacos végétariens aux haricots noirs"
-    },
-    "Samedi": {
-      breakfast: "Pain perdu aux fruits",
-      lunch: "Soupe miso et sushi végétariens",
-      dinner: "Pizza maison aux légumes grillés"
-    },
-    "Dimanche": {
-      breakfast: "Brunch : œufs bénédictine",
-      lunch: "Salade de pâtes méditerranéenne",
-      dinner: "Ratatouille et poisson grillé"
-    }
-  };
 
   const shoppingList = [
     { name: "Légumes", items: ["Courgettes (3)", "Aubergine (1)", "Poivrons (2)", "Champignons (250g)", "Épinards (200g)"] },
@@ -75,6 +46,30 @@ const MealPlanningPage = () => {
   ];
 
   const weeklyAverage = getWeeklyAverage(weekDays);
+
+  const handleEditMeal = (day: string, type: 'breakfast' | 'lunch' | 'dinner') => {
+    setEditingMeal({
+      day,
+      type,
+      meal: meals[day][type]
+    });
+  };
+
+  const handleSaveMeal = (updatedMeal: { name: string; description: string }) => {
+    if (editingMeal) {
+      updateMeal(editingMeal.day, editingMeal.type, updatedMeal);
+      setEditingMeal(null);
+    }
+  };
+
+  const getMealTypeLabel = (type: string) => {
+    const labels = {
+      breakfast: "Petit-déjeuner",
+      lunch: "Déjeuner", 
+      dinner: "Dîner"
+    };
+    return labels[type as keyof typeof labels];
+  };
 
   return (
     <Layout>
@@ -88,12 +83,7 @@ const MealPlanningPage = () => {
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-wrap gap-3">
-              <Button onClick={showComingSoon} className="bg-wp-green hover:bg-wp-green-dark">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                </svg>
-                Générer un menu
-              </Button>
+              <MealGenerationDialog onMealsGenerated={replaceAllMeals} />
               <Button variant="outline" onClick={showComingSoon} className="border-wp-green text-wp-green hover:bg-wp-green-light dark:border-wp-green dark:text-wp-green dark:hover:bg-wp-gray-dark">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                   <line x1="12" y1="20" x2="12" y2="10"></line>
@@ -105,10 +95,8 @@ const MealPlanningPage = () => {
             </div>
           </div>
 
-          {/* Légende nutritionnelle */}
           <NutritionLegend />
 
-          {/* Résumé nutritionnel hebdomadaire */}
           <div className="mb-8">
             <WeeklyNutritionSummary 
               weeklyAverage={weeklyAverage}
@@ -137,66 +125,34 @@ const MealPlanningPage = () => {
                           <div className="flex flex-col gap-6">
                             <h3 className="text-lg font-medium text-wp-green-dark dark:text-wp-green">{day}</h3>
                             
-                            {/* Repas avec données nutritionnelles détaillées */}
                             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                              {/* Petit-déjeuner */}
-                              <div className="space-y-3">
-                                <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                                  <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
-                                    Petit-déjeuner
+                              {(['breakfast', 'lunch', 'dinner'] as const).map((mealType) => (
+                                <div key={mealType} className="space-y-3">
+                                  <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
+                                    <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
+                                      {getMealTypeLabel(mealType)}
+                                    </div>
+                                    <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">
+                                      {meals[day][mealType].name}
+                                    </p>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => handleEditMeal(day, mealType)}
+                                      className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0"
+                                    >
+                                      <span className="text-xs">Modifier</span>
+                                    </Button>
                                   </div>
-                                  <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">{meals[day].breakfast}</p>
-                                  <Button variant="ghost" size="sm" onClick={showComingSoon} className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
-                                    <span className="text-xs">Modifier</span>
-                                  </Button>
+                                  <NutritionCard
+                                    nutrition={dayNutrition[mealType]}
+                                    goals={userGoals}
+                                    title="Nutrition"
+                                    type="meal"
+                                  />
                                 </div>
-                                <NutritionCard
-                                  nutrition={dayNutrition.breakfast}
-                                  goals={userGoals}
-                                  title="Nutrition"
-                                  type="meal"
-                                />
-                              </div>
+                              ))}
 
-                              {/* Déjeuner */}
-                              <div className="space-y-3">
-                                <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                                  <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
-                                    Déjeuner
-                                  </div>
-                                  <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">{meals[day].lunch}</p>
-                                  <Button variant="ghost" size="sm" onClick={showComingSoon} className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
-                                    <span className="text-xs">Modifier</span>
-                                  </Button>
-                                </div>
-                                <NutritionCard
-                                  nutrition={dayNutrition.lunch}
-                                  goals={userGoals}
-                                  title="Nutrition"
-                                  type="meal"
-                                />
-                              </div>
-
-                              {/* Dîner */}
-                              <div className="space-y-3">
-                                <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                                  <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
-                                    Dîner
-                                  </div>
-                                  <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">{meals[day].dinner}</p>
-                                  <Button variant="ghost" size="sm" onClick={showComingSoon} className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0">
-                                    <span className="text-xs">Modifier</span>
-                                  </Button>
-                                </div>
-                                <NutritionCard
-                                  nutrition={dayNutrition.dinner}
-                                  goals={userGoals}
-                                  title="Nutrition"
-                                  type="meal"
-                                />
-                              </div>
-
-                              {/* Total du jour */}
                               <div>
                                 <NutritionCard
                                   nutrition={dayNutrition.total}
@@ -263,6 +219,13 @@ const MealPlanningPage = () => {
               </Card>
             </TabsContent>
           </Tabs>
+
+          <MealEditDialog
+            isOpen={!!editingMeal}
+            onClose={() => setEditingMeal(null)}
+            meal={editingMeal?.meal || null}
+            onSave={handleSaveMeal}
+          />
         </div>
       </section>
     </Layout>

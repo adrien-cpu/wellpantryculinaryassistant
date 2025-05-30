@@ -103,7 +103,7 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
   return (
     <div>
       <h2>Image Recognition</h2>
-      {modelError ? ( // Display error message if model loading failed
+      {modelError ? (
         <p className="text-red-500">{modelError}</p>
       ) : modelLoading ? (
         <p>Loading model...</p>
@@ -111,7 +111,9 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
         <div>
           <video ref={videoRef} autoPlay playsInline style={{ width: '100%', maxWidth: '500px' }} />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
+
+export default ImageRecognizer;

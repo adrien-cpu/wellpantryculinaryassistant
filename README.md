@@ -1,73 +1,182 @@
-# Welcome to your Lovable project
+# WellPantry - Assistant Culinaire Intelligent
 
-## Project info
+WellPantry est une application web moderne qui vous aide à gérer votre garde-manger, planifier vos repas et découvrir de nouvelles recettes. Elle intègre des fonctionnalités avancées comme la reconnaissance d'aliments, la gestion de potager d'intérieur, une carte communautaire et l'organisation de dîners partagés.
 
-**URL**: https://lovable.dev/projects/ed7d2266-fecd-4051-afad-115065b1b18f
+## 🚀 Technologies
 
-## How can I edit this code?
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Supabase
+- Google Maps API
+- TensorFlow.js
+- OpenCV.js
+- et plus encore...
 
-There are several ways of editing your application.
+## 🌟 Fonctionnalités
 
-**Use Lovable**
+### Garde-manger intelligent
+- **Scan de codes-barres** - Ajoutez rapidement des produits en scannant leur code-barres
+- **Reconnaissance d'images** - Identifiez les aliments par photo
+- **Alertes d'expiration** - Recevez des notifications pour les produits qui vont bientôt expirer
+- **Statistiques de consommation** - Visualisez vos habitudes alimentaires
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ed7d2266-fecd-4051-afad-115065b1b18f) and start prompting.
+### Planification des repas
+- **Calendrier des repas** - Planifiez vos repas pour la semaine
+- **Génération de menus** - Obtenez des suggestions basées sur vos préférences
+- **Liste de courses automatique** - Générez une liste à partir de vos menus planifiés
 
-Changes made via Lovable will be committed automatically to this repo.
+### Recettes
+- **Bibliothèque de recettes** - Explorez une vaste collection de recettes
+- **Recherche avancée** - Filtrez par ingrédients, temps de préparation, régime alimentaire
+- **Génération par IA** - Créez des recettes personnalisées avec l'IA
+- **Évaluation et commentaires** - Partagez votre expérience avec la communauté
 
-**Use your preferred IDE**
+### Potager d'intérieur
+- **Suivi des plantes** - Gérez vos plantes aromatiques et potagères
+- **Rappels d'arrosage** - Ne manquez jamais un arrosage
+- **Conseils de jardinage** - Recevez des conseils adaptés à chaque plante
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Carte communautaire
+- **Points d'intérêt** - Découvrez les ressources alimentaires locales
+- **Contribution** - Ajoutez vos propres découvertes
+- **Évaluations** - Partagez votre expérience des lieux visités
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Gastronomie moléculaire
+- **Analyse des associations** - Découvrez les meilleures combinaisons d'ingrédients
+- **Techniques culinaires** - Apprenez des techniques avancées
+- **Profils aromatiques** - Comprenez la chimie derrière les saveurs
 
-Follow these steps:
+### Dîners & Événements sociaux
+- **Planification d'événements** - Organisez des repas partagés
+- **Gestion des invitations** - Invitez des amis et suivez leurs réponses
+- **Coordination des contributions** - Organisez qui apporte quoi
+- **Évaluations post-événement** - Partagez vos impressions après l'événement
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 📋 Prérequis
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Node.js 18+
+- npm 8+
+- Un compte Supabase
+- Une clé API Google Maps
+- Un compte OpenAI (optionnel, pour les fonctionnalités d'IA)
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🔑 Configuration des clés API
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Supabase
+
+1. Créez un compte sur [Supabase](https://supabase.com)
+2. Créez un nouveau projet
+3. Dans les paramètres du projet, récupérez :
+   - L'URL du projet
+   - La clé anon/public
+4. Copiez ces valeurs dans le fichier `.env` :
+   ```
+   VITE_SUPABASE_URL=votre_url_supabase
+   VITE_SUPABASE_ANON_KEY=votre_clé_anon
+   ```
+
+### Google Maps
+
+1. Créez un compte sur [Google Cloud Console](https://console.cloud.google.com)
+2. Créez un nouveau projet
+3. Activez l'API Maps JavaScript
+4. Créez une clé API avec les restrictions appropriées
+5. Ajoutez la clé dans le fichier `.env` :
+   ```
+   VITE_GOOGLE_MAPS_API_KEY=votre_clé_google_maps
+   ```
+
+## 📦 Installation
+
+1. Clonez le dépôt :
+   ```bash
+   git clone https://github.com/votre-username/wellpantry.git
+   cd wellpantry
+   ```
+
+2. Installez les dépendances :
+   ```bash
+   npm install
+   ```
+
+3. Créez un fichier `.env` à la racine du projet avec vos clés API (voir section Configuration)
+
+4. Lancez le serveur de développement :
+   ```bash
+   npm run dev
+   ```
+
+## 🗄️ Base de données
+
+Le projet utilise Supabase comme base de données. Les migrations SQL sont disponibles dans le dossier `supabase/migrations/`. Pour initialiser la base de données :
+
+1. Installez l'interface en ligne de commande Supabase
+2. Connectez-vous à votre projet
+3. Exécutez les migrations :
+   ```bash
+   supabase db reset
+   ```
+
+## 🧪 Tests
+
+Pour exécuter les tests :
+
+```bash
+# Tests unitaires
+npm run test
+
+# Tests end-to-end
+npm run test:e2e
+
+# Couverture des tests
+npm run test:coverage
 ```
 
-**Edit a file directly in GitHub**
+## 🚀 Déploiement
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+L'application peut être déployée sur n'importe quelle plateforme supportant Node.js. Voici les étapes pour un déploiement sur Netlify :
 
-**Use GitHub Codespaces**
+1. Créez un compte sur [Netlify](https://www.netlify.com/)
+2. Connectez votre dépôt GitHub
+3. Configurez les variables d'environnement
+4. Déployez l'application
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🧩 Architecture
 
-## What technologies are used for this project?
+L'application suit une architecture modulaire avec séparation des préoccupations :
 
-This project is built with:
+- **Components** : Composants UI réutilisables
+- **Pages** : Composants de page qui utilisent les composants UI
+- **Hooks** : Logique réutilisable et gestion d'état
+- **Lib** : Services et utilitaires
+- **Context** : État global de l'application
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🛠️ Bonnes pratiques
 
-## How can I deploy this project?
+Le projet suit les bonnes pratiques suivantes :
 
-Simply open [Lovable](https://lovable.dev/projects/ed7d2266-fecd-4051-afad-115065b1b18f) and click on Share -> Publish.
+- **Accessibilité** : Composants accessibles et support des lecteurs d'écran
+- **Performance** : Optimisation des rendus et des requêtes
+- **Sécurité** : Validation des entrées et Row Level Security avec Supabase
+- **Maintenabilité** : Code modulaire et bien documenté
+- **Tests** : Tests unitaires et d'intégration
 
-## Can I connect a custom domain to my Lovable project?
+## 🤝 Contribution
 
-Yes, you can!
+Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Forkez le projet
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/amazing-feature`)
+3. Committez vos changements (`git commit -m 'Add some amazing feature'`)
+4. Poussez vers la branche (`git push origin feature/amazing-feature`)
+5. Ouvrez une Pull Request
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📄 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## 📞 Contact
+
+Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue sur GitHub.

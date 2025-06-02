@@ -16,12 +16,23 @@ import WeeklyNutritionSummary from "@/components/meal-planning/WeeklyNutritionSu
 import NutritionLegend from "@/components/meal-planning/NutritionLegend";
 import MealGenerationDialog from "@/components/meal-planning/MealGenerationDialog";
 import MealEditDialog from "@/components/meal-planning/MealEditDialog";
+import MealPlannerCalendar from "@/components/meal-planning/MealPlannerCalendar";
+import MealPlannerTable from "@/components/meal-planning/MealPlannerTable";
+import MonthlyCalendar from "@/components/meal-planning/MonthlyCalendar";
+import WeeklyVerticalView from "@/components/meal-planning/WeeklyVerticalView";
+import DailyView from "@/components/meal-planning/DailyView";
+import type { DayMeals } from "@/types/meal-planning";
+import dayjs from "dayjs";
 
 const MealPlanningPage = () => {
   const { toast } = useToast();
   const { userGoals, calculateDayTotal, getWeeklyAverage } = useNutritionData();
   const { meals, updateMeal, replaceAllMeals } = useMealPlanning();
-  
+
+  const [view, setView] = useState<"month" | "week" | "day">("week");
+  const [currentDate, setCurrentDate] = useState(dayjs());
+  const [selectedDay, setSelectedDay] = useState(dayjs().format("YYYY-MM-DD"));
+
   const [editingMeal, setEditingMeal] = useState<{
     day: string;
     type: 'breakfast' | 'lunch' | 'dinner';
@@ -51,8 +62,10 @@ const MealPlanningPage = () => {
     setEditingMeal({
       day,
       type,
-      meal: meals[day][type]
+      meal: meals[day]?.[type] || { name: "", description: "" }
     });
+    setSelectedDay(day);
+    setView("day");
   };
 
   const handleSaveMeal = (updatedMeal: { name: string; description: string }) => {
@@ -60,15 +73,6 @@ const MealPlanningPage = () => {
       updateMeal(editingMeal.day, editingMeal.type, updatedMeal);
       setEditingMeal(null);
     }
-  };
-
-  const getMealTypeLabel = (type: string) => {
-    const labels = {
-      breakfast: "Petit-déjeuner",
-      lunch: "Déjeuner", 
-      dinner: "Dîner"
-    };
-    return labels[type as keyof typeof labels];
   };
 
   return (
@@ -113,60 +117,37 @@ const MealPlanningPage = () => {
             <TabsContent value="planning">
               <Card>
                 <CardHeader>
-                  <CardTitle>Planning hebdomadaire</CardTitle>
-                  <CardDescription>Semaine du 19 au 25 mai 2025 - Suivi nutritionnel détaillé</CardDescription>
+                  <CardTitle>Planning</CardTitle>
+                  <MealPlannerCalendar
+                    view={view}
+                    setView={setView}
+                  />
+                  <CardDescription>
+                    Planifiez vos repas pour la semaine, le mois ou la journée et suivez votre nutrition quotidienne
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-8">
-                    {weekDays.map((day) => {
-                      const dayNutrition = calculateDayTotal(day);
-                      return (
-                        <div key={day} className="border-b border-wp-gray pb-6 last:border-b-0 last:pb-0">
-                          <div className="flex flex-col gap-6">
-                            <h3 className="text-lg font-medium text-wp-green-dark dark:text-wp-green">{day}</h3>
-                            
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                              {(['breakfast', 'lunch', 'dinner'] as const).map((mealType) => (
-                                <div key={mealType} className="space-y-3">
-                                  <div className="p-3 bg-wp-gray-light dark:bg-wp-gray-dark rounded-md">
-                                    <div className="text-sm text-wp-brown-dark dark:text-wp-orange-light font-medium mb-1">
-                                      {getMealTypeLabel(mealType)}
-                                    </div>
-                                    <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm mb-2">
-                                      {meals[day][mealType].name}
-                                    </p>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm" 
-                                      onClick={() => handleEditMeal(day, mealType)}
-                                      className="h-7 text-wp-green-dark dark:text-wp-green hover:text-wp-green hover:bg-transparent p-0"
-                                    >
-                                      <span className="text-xs">Modifier</span>
-                                    </Button>
-                                  </div>
-                                  <NutritionCard
-                                    nutrition={dayNutrition[mealType]}
-                                    goals={userGoals}
-                                    title="Nutrition"
-                                    type="meal"
-                                  />
-                                </div>
-                              ))}
-
-                              <div>
-                                <NutritionCard
-                                  nutrition={dayNutrition.total}
-                                  goals={userGoals}
-                                  title={`Total ${day}`}
-                                  type="daily"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {view === "month" && (
+                    <MonthlyCalendar
+                      currentDate={currentDate}
+                      meals={meals}
+                      onEditMeal={handleEditMeal}
+                    />
+                  )}
+                  {view === "week" && (
+                    <WeeklyVerticalView
+                      weekDays={weekDays}
+                      meals={meals}
+                      onEditMeal={handleEditMeal}
+                    />
+                  )}
+                  {view === "day" && (
+                    <DailyView
+                      date={selectedDay}
+                      meals={meals}
+                      onEditMeal={handleEditMeal}
+                    />
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

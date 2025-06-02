@@ -17,7 +17,7 @@ const Hero = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Button asChild size="lg" className="bg-wp-green hover:bg-wp-green-dark text-white">
-              <Link to="/register">Commencer gratuitement</Link>
+              <Link to="/signup">Commencer gratuitement</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="border-wp-green text-wp-green hover:bg-wp-green-light dark:border-wp-green dark:text-wp-green dark:hover:bg-wp-gray-dark">
               <Link to="/features">Découvrir les fonctionnalités</Link>

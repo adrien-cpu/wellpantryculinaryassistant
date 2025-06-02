@@ -1,4 +1,3 @@
-
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import PantryItemForm from "@/components/pantry/PantryItemForm";
@@ -166,7 +165,10 @@ const PantryPage = () => {
           </DrawerHeader>
           {/* Add p-4 for padding to the recognizer content */}
           <div className="p-4">
-            <ImageRecognizer onImageRecognized={handleImageRecognized}/>
+            <ImageRecognizer 
+  isOpen={isRecognizingImage}
+  onImageRecognized={handleImageRecognized}
+/>
           </div>
         </DrawerContent>
       </Drawer>

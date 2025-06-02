@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu, 
@@ -8,41 +8,46 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/context/AuthContext";
+import { Home, BookOpen, Leaf, Calendar, ShoppingBasket, Map, Sparkles, User } from "lucide-react";
+import LogoutButton from "@/components/LogoutButton";
+
+const navigationLinks = [
+  { name: "Tableau de bord", href: "/dashboard", icon: <Home className="w-6 h-6 mr-2" /> },
+  { name: "Recettes", href: "/recipes", icon: <BookOpen className="w-6 h-6 mr-2" /> },
+  { name: "Potager", href: "/garden", icon: <Leaf className="w-6 h-6 mr-2" /> },
+  { name: "Planification", href: "/meal-planning", icon: <Calendar className="w-6 h-6 mr-2" /> },
+  { name: "Garde-manger", href: "/pantry", icon: <ShoppingBasket className="w-6 h-6 mr-2" /> },
+  { name: "Carte", href: "/map", icon: <Map className="w-6 h-6 mr-2" /> },
+  { name: "Fonctionnalités", href: "/features", icon: <Sparkles className="w-6 h-6 mr-2" /> },
+];
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { user, loading } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const navigationLinks = [
-    { name: "Accueil", href: "/" },
-    { name: "Recettes", href: "/recipes" },
-    { name: "Potager", href: "/garden" },
-    { name: "Repas", href: "/meal-planning" },
-    { name: "Garde-manger", href: "/pantry" },
-    { name: "Carte", href: "/map" },
-    { name: "Fonctionnalités", href: "/features" },
-  ];
-
   return (
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-wp-gray-dark border-b border-wp-gray shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
+          {/* Logo à gauche */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-wp-green rounded-md flex items-center justify-center">
               <span className="text-white font-bold">WP</span>
             </div>
             <span className="font-semibold text-xl text-wp-green-dark dark:text-wp-green">WellPantry</span>
           </Link>
-
+          {/* Menu à droite */}
           {isMobile ? (
             <div className="flex items-center">
-              <DropdownMenu>
+              <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-10 w-10 p-0">
+                  <Button variant="ghost" className="h-10 w-10 p-0" onClick={toggleMenu}>
                     <span className="sr-only">Menu</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -63,34 +68,71 @@ const Navbar: React.FC = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-                  {navigationLinks.map((link) => (
-                    <DropdownMenuItem key={link.href} className="cursor-pointer">
-                      <Link 
-                        to={link.href} 
-                        className="w-full"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {link.name}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
+  {navigationLinks.map((link) => (
+    <DropdownMenuItem key={link.href} className="cursor-pointer">
+      <Link 
+        to={link.href} 
+        className="w-full"
+        onClick={() => setIsMenuOpen(false)}
+      >
+        {link.icon}
+        {link.name}
+      </Link>
+    </DropdownMenuItem>
+  ))}
+</DropdownMenuContent>
               </DropdownMenu>
             </div>
           ) : (
-            <nav className="hidden md:flex items-center space-x-6">
-              {navigationLinks.map((link) => (
-                <Link
+            <nav className="flex items-center space-x-6">
+              {user && navigationLinks.map((link) => (
+                <NavLink
                   key={link.href}
                   to={link.href}
-                  className="text-wp-gray-dark hover:text-wp-green transition-colors dark:text-wp-gray-light dark:hover:text-wp-green"
+                  className={({ isActive }) =>
+                    `flex items-center text-base transition-colors px-2 py-1 rounded 
+                    ${isActive 
+                      ? "bg-wp-green-light text-wp-green-dark font-bold" 
+                      : "text-wp-gray-dark hover:text-wp-green dark:text-wp-gray-light dark:hover:text-wp-green"}`
+                  }
+                  style={{ minWidth: 0 }}
                 >
-                  {link.name}
-                </Link>
+                  {link.icon}
+                  <span className="whitespace-nowrap">{link.name}</span>
+                </NavLink>
               ))}
-              <Button variant="default" className="bg-wp-green hover:bg-wp-green-dark">
-                Connexion
-              </Button>
+              
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center focus:outline-none">
+                      <User className="w-6 h-6 mr-2" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link to="/profil" className="flex items-center">
+                        <User className="w-5 h-5 mr-2" />
+                        Profil
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/UserSettings" className="flex items-center">
+                        {/* Remplace par une icône adaptée, par exemple Settings */}
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Paramètres
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <LogoutButton />
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-wp-green-dark">
+                  <Link to="/login">Connexion</Link>
+                </Button>
+              )}
             </nav>
           )}
         </div>

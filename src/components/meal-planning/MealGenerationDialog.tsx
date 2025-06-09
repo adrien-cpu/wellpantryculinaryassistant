@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useNutritionData } from '@/hooks/useNutritionData';
 import { Loader2, Sparkles, Beaker } from 'lucide-react';
+import GenerationOptions from '@/components/meal-planning/GenerationOptions';
 
 interface MealGenerationDialogProps {
   onMealsGenerated: (meals: any) => void;
@@ -19,6 +19,9 @@ const MealGenerationDialog: React.FC<MealGenerationDialogProps> = ({ onMealsGene
   const [useMolecularGastronomy, setUseMolecularGastronomy] = useState(false);
   const { toast } = useToast();
   const { userGoals } = useNutritionData();
+  const [people, setPeople] = useState(2);
+  const [periodType, setPeriodType] = useState<"jours" | "semaines" | "mois">("semaines");
+  const [periodValue, setPeriodValue] = useState(1);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -33,6 +36,9 @@ const MealGenerationDialog: React.FC<MealGenerationDialogProps> = ({ onMealsGene
           nutritionGoals: userGoals,
           dietaryPreferences: ['équilibré', 'varié'],
           useMolecularGastronomy,
+          people,
+          periodType,
+          periodValue,
         }),
       });
 
@@ -69,7 +75,7 @@ const MealGenerationDialog: React.FC<MealGenerationDialogProps> = ({ onMealsGene
       <DialogTrigger asChild>
         <Button className="bg-wp-green hover:bg-wp-green-dark">
           <Sparkles className="mr-2 h-4 w-4" />
-          Générer un menu
+          Générer vos menus
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -128,6 +134,15 @@ const MealGenerationDialog: React.FC<MealGenerationDialogProps> = ({ onMealsGene
               />
             </div>
           </div>
+
+          <GenerationOptions
+            people={people}
+            setPeople={setPeople}
+            periodType={periodType}
+            setPeriodType={setPeriodType}
+            periodValue={periodValue}
+            setPeriodValue={setPeriodValue}
+          />
 
           <div className="flex gap-3">
             <Button 

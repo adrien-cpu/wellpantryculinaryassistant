@@ -13,12 +13,17 @@ import AccessibilitySettings from '../components/AccessibilitySettings';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import Layout from "@/components/layout/Layout";
+import { useLocation } from "react-router-dom";
 
 export default function Settings() {
   const { signOut, user } = useAuth();
   const [activeTab, setActiveTab] = useState('privacy');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab") || location.hash.replace("#", "") || "profil";
 
   useEffect(() => {
     const initializeUserPreferences = async () => {
@@ -85,6 +90,12 @@ export default function Settings() {
       console.error('Error signing out:', error);
     }
   };
+
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [tab]);
 
   if (loading) {
     return (

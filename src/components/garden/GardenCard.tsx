@@ -1,29 +1,30 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-
-interface Plant {
-  id: number;
-  name: string;
-  image: string;
-  wateringStatus: number;
-  lastWatered: string;
-  nextWatering: string;
-  growthStage: string;
-  tips: string;
-  type: string;
-}
+import AdviceModal from "./AdviceModal";
+import type { Plant } from "./GardenData";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AddPlantForm from "./AddPlantForm";
 
 interface GardenCardProps {
   plant: Plant;
+  onRemove: (id: number) => void;
+  onToggleWatered?: (id: number) => void; // Pour le bouton arrosage
+  onToggleNotifications?: (id: number, enabled: boolean) => void; // Pour le switch notifications
+  onUpdatePlant?: (plant: Plant) => void; // Pour la mise à jour de la plante
 }
 
-const GardenCard: React.FC<GardenCardProps> = ({ plant }) => {
+const GardenCard: React.FC<GardenCardProps> = ({ plant, onRemove, onToggleWatered, onToggleNotifications, onUpdatePlant }) => {
   const { toast } = useToast();
+  const [showAdvice, setShowAdvice] = useState(false);
+  const [isWatered, setIsWatered] = useState(false);
+  const [notifications, setNotifications] = useState(plant.notificationsEnabled ?? false);
+  const [showPlanning, setShowPlanning] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const showComingSoon = () => {
     toast({
@@ -33,13 +34,23 @@ const GardenCard: React.FC<GardenCardProps> = ({ plant }) => {
     });
   };
 
+  const handleWater = () => {
+    setIsWatered(!isWatered);
+    onToggleWatered && onToggleWatered(plant.id);
+  };
+
+  const handleNotifications = (checked: boolean) => {
+    setNotifications(checked);
+    onToggleNotifications && onToggleNotifications(plant.id, checked);
+  };
+
   return (
     <Card className="card-hover overflow-hidden border-wp-green-light bg-white dark:bg-wp-gray-dark dark:border-wp-green-dark">
       <div className="relative h-48 w-full overflow-hidden">
         <img
           src={plant.image}
           alt={plant.name}
-          className="h-full w-full object-cover transition-transform hover:scale-105"
+          className="rounded w-full h-40 object-cover"
         />
       </div>
       <CardHeader className="pb-0">
@@ -98,27 +109,95 @@ const GardenCard: React.FC<GardenCardProps> = ({ plant }) => {
             <p className="text-wp-gray-dark dark:text-wp-gray-light text-sm">Stade de croissance</p>
             <p className="font-medium">{plant.growthStage}</p>
           </div>
+
+          <div className="flex items-center">
+            <Switch checked={notifications} onCheckedChange={handleNotifications} />
+            <span className="ml-1 text-xs">Notifications d'entretiens</span>
+          </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="ghost" size="sm" onClick={showComingSoon} className="text-wp-green">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          Conseils
+      <CardFooter className="flex flex-wrap gap-2 justify-between items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-wp-green"
+          onClick={() => setShowAdvice(true)}
+        >
+          💡 Conseils
         </Button>
-        <Button variant="outline" size="sm" onClick={showComingSoon} className="border-wp-green text-wp-green">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-            <path d="M12 22c4.97 0 9-2.69 9-6s-4.03-6-9-6-9 2.69-9 6 4.03 6 9 6z"></path>
-            <path d="M12 16v6"></path>
-            <path d="M9 10a3 3 0 1 0 6 0 3 3 0 0 0-6 0"></path>
-            <path d="M12 13v3"></path>
-          </svg>
-          Arroser
+        <Button
+          variant={isWatered ? "default" : "outline"}
+          size="sm"
+          onClick={handleWater}
+          className="border-wp-green text-wp-black hover:bg-wp-green/90"
+          title={isWatered ? "Marquer comme non arrosé" : "Marquer comme arrosé"}
+        >
+          {isWatered ? "Arrosé" : "À arroser"}
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          className="text-black border-destructive hover:bg-destructive/90"
+          onClick={() => onRemove(plant.id)}
+        >
+          Retirer
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-wp-blue"
+          onClick={() => setShowPlanning(true)}
+        >
+          📅 Planning
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowEditModal(true)}
+        >
+          Modifier
         </Button>
       </CardFooter>
+      {showAdvice && (
+        <AdviceModal
+          tips={plant.tips}
+          onClose={() => setShowAdvice(false)}
+        />
+      )}
+      {showPlanning && (
+        <Dialog open={showPlanning} onOpenChange={setShowPlanning}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Planning de {plant.name}</DialogTitle>
+            </DialogHeader>
+            <ul className="list-disc pl-5">
+              {plant.planning?.map((t, idx) => (
+                <li key={idx}>
+                  {t.date} : {t.action} {t.done ? "✅" : ""}
+                </li>
+              ))}
+            </ul>
+            {/* Tu peux ajouter ici un formulaire pour ajouter une tâche */}
+          </DialogContent>
+        </Dialog>
+      )}
+      {showEditModal && (
+        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <DialogContent className="w-auto max-w-fit p-6">
+            <DialogHeader>
+              <DialogTitle>Modifier la plante</DialogTitle>
+            </DialogHeader>
+            <AddPlantForm
+              onAdd={updatedPlant => {
+                onUpdatePlant(updatedPlant);
+                setShowEditModal(false);
+              }}
+              onCancel={() => setShowEditModal(false)}
+              initialPlant={plant}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 };

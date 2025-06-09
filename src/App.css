@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+body input, body textarea, body select {
+  color: #111 !important;
+  background-color: #fff !important;
+}
+
+.dialog-content input, 
+.dialog-content textarea, 
+.dialog-content select {
+  color: #111 !important;
+  background-color: #fff !important;
+}

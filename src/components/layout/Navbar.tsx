@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/AuthContext";
-import { Home, BookOpen, Leaf, Calendar, ShoppingBasket, Map, Sparkles, User } from "lucide-react";
+import { Home, BookOpen, Leaf, Calendar, ShoppingBasket, Map, Sparkles, User, FlaskConical } from "lucide-react";
 import LogoutButton from "@/components/LogoutButton";
 
 const navigationLinks = [
@@ -19,6 +19,7 @@ const navigationLinks = [
   { name: "Planification", href: "/meal-planning", icon: <Calendar className="w-6 h-6 mr-2" /> },
   { name: "Garde-manger", href: "/pantry", icon: <ShoppingBasket className="w-6 h-6 mr-2" /> },
   { name: "Carte", href: "/map", icon: <Map className="w-6 h-6 mr-2" /> },
+  { name: "Gastronomie", href: "/molecular", icon: <FlaskConical className="w-6 h-6 mr-2" /> },
   { name: "Fonctionnalités", href: "/features", icon: <Sparkles className="w-6 h-6 mr-2" /> },
 ];
 
@@ -68,19 +69,19 @@ const Navbar: React.FC = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-  {navigationLinks.map((link) => (
-    <DropdownMenuItem key={link.href} className="cursor-pointer">
-      <Link 
-        to={link.href} 
-        className="w-full"
-        onClick={() => setIsMenuOpen(false)}
-      >
-        {link.icon}
-        {link.name}
-      </Link>
-    </DropdownMenuItem>
-  ))}
-</DropdownMenuContent>
+                  {navigationLinks.map((link) => (
+                    <DropdownMenuItem key={link.href} className="cursor-pointer">
+                      <Link 
+                        to={link.href} 
+                        className="w-full"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {link.icon}
+                        {link.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
               </DropdownMenu>
             </div>
           ) : (
@@ -118,7 +119,6 @@ const Navbar: React.FC = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/UserSettings" className="flex items-center">
-                        {/* Remplace par une icône adaptée, par exemple Settings */}
                         <Sparkles className="w-5 h-5 mr-2" />
                         Paramètres
                       </Link>

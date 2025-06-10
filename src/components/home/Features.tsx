@@ -1,6 +1,6 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -14,6 +14,7 @@ const features = [
         <path d="M4 4v16"></path>
       </svg>
     ),
+    link: "/pantry"
   },
   {
     title: "Planification des repas",
@@ -27,6 +28,7 @@ const features = [
         <path d="m9 16 2 2 4-4"></path>
       </svg>
     ),
+    link: "/meal-planning"
   },
   {
     title: "Bibliothèque de recettes",
@@ -36,6 +38,7 @@ const features = [
         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
       </svg>
     ),
+    link: "/recipes"
   },
   {
     title: "Potager d'intérieur",
@@ -47,6 +50,7 @@ const features = [
         <path d="M8 12V6c0-2.2 1.8-4 4-4h8c0 1.1-.9 2-2 2"></path>
       </svg>
     ),
+    link: "/garden"
   },
   {
     title: "Carte communautaire",
@@ -57,18 +61,21 @@ const features = [
         <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8z"></path>
       </svg>
     ),
+    link: "/map"
   },
   {
-    title: "Dîners & Événements",
-    description: "Organisez des repas partagés, invitez des amis et coordonnez les contributions de chacun.",
+    title: "Gastronomie Moléculaire",
+    description: "Explorez la science derrière les saveurs et transformez votre cuisine avec des techniques innovantes.",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        <path d="M10 2v7.31"></path>
+        <path d="M14 9.3V1.99"></path>
+        <path d="M8.5 2h7"></path>
+        <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+        <path d="M5.58 16.5h12.85"></path>
       </svg>
     ),
+    link: "/molecular"
   },
 ];
 
@@ -85,19 +92,21 @@ const Features = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="card-hover border-wp-green-light bg-white dark:bg-wp-gray-dark dark:border-wp-green-dark">
-              <CardHeader>
-                <div className="icon-container mb-4">
-                  {feature.icon}
-                </div>
-                <CardTitle className="text-wp-green-dark dark:text-wp-green">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-wp-gray-dark dark:text-wp-gray-light">
-                  {feature.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link to={feature.link} key={index} className="block">
+              <Card className="card-hover border-wp-green-light bg-white dark:bg-wp-gray-dark dark:border-wp-green-dark h-full">
+                <CardHeader>
+                  <div className="icon-container mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="text-wp-green-dark dark:text-wp-green">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-wp-gray-dark dark:text-wp-gray-light">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

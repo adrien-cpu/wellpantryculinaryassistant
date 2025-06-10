@@ -15,7 +15,7 @@ import Dashboard from "@/pages/Dashboard";
 import Features from "@/pages/Features";
 import UserProfile from "./pages/UserProfile";
 import UserSettings from "./pages/UserSettings";
-import { Settings } from "lucide-react";
+import MolecularGastronomy from "./pages/MolecularGastronomy";
 
 function App() {
   useEffect(() => {
@@ -33,6 +33,7 @@ function App() {
         <Route path="/pantry" element={<Pantry />} />
         <Route path="/map" element={<Map />} />
         <Route path="/features" element={<Features />} />
+        <Route path="/molecular" element={<MolecularGastronomy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profil" element={<UserProfile />} />

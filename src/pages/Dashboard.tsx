@@ -7,10 +7,26 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
+// Helper function to generate week dates
+const getWeekDates = (date: Date) => {
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajuster si dimanche
+  const monday = new Date(date.setDate(diff));
+  
+  const weekDates = [];
+  for (let i = 0; i < 7; i++) {
+    const nextDay = new Date(monday);
+    nextDay.setDate(monday.getDate() + i);
+    weekDates.push(nextDay);
+  }
+  return weekDates;
+};
+
 export default function Dashboard() {
   const [recipesCount, setRecipesCount] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
+  // Initialize currentWeek with actual dates instead of empty array
+  const [currentWeek, setCurrentWeek] = useState<Date[]>(() => getWeekDates(new Date()));
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Données simulées pour les statistiques
@@ -81,22 +97,8 @@ export default function Dashboard() {
     }
   };
 
-  // Générer les dates de la semaine courante
+  // Update currentWeek when currentDate changes
   useEffect(() => {
-    const getWeekDates = (date: Date) => {
-      const day = date.getDay();
-      const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajuster si dimanche
-      const monday = new Date(date.setDate(diff));
-      
-      const weekDates = [];
-      for (let i = 0; i < 7; i++) {
-        const nextDay = new Date(monday);
-        nextDay.setDate(monday.getDate() + i);
-        weekDates.push(nextDay);
-      }
-      return weekDates;
-    };
-    
     setCurrentWeek(getWeekDates(new Date(currentDate)));
   }, [currentDate]);
 
@@ -375,7 +377,11 @@ export default function Dashboard() {
                   <Button variant="outline" size="icon" onClick={navigateToPreviousWeek}>
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm">Semaine du {formatDisplayDate(currentWeek[0])} au {formatDisplayDate(currentWeek[6])}</span>
+                  <span className="text-sm">
+                    {currentWeek.length > 0 && (
+                      <>Semaine du {formatDisplayDate(currentWeek[0])} au {formatDisplayDate(currentWeek[6])}</>
+                    )}
+                  </span>
                   <Button variant="outline" size="icon" onClick={navigateToNextWeek}>
                     <ChevronRight className="h-4 w-4" />
                   </Button>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BeakerIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 
@@ -18,7 +18,7 @@ interface ChemicalCompatibilityChartProps {
 
 export default function ChemicalCompatibilityChart({ selectedIngredient }: ChemicalCompatibilityChartProps) {
   // Données d'exemple pour les associations chimiques
-  const chemicalPairings: ChemicalPairing[] = [
+  const [chemicalPairings, setChemicalPairings] = useState<ChemicalPairing[]>([
     {
       compound1: "Vanilline",
       compound2: "Cinnamaldéhyde",
@@ -64,7 +64,42 @@ export default function ChemicalCompatibilityChart({ selectedIngredient }: Chemi
       scientificExplanation: "Ces phénylpropanoïdes partagent des structures moléculaires similaires qui créent une complémentarité aromatique.",
       culinaryApplications: ["Pâtisserie", "Plats d'hiver", "Boissons chaudes"]
     }
-  ];
+  ]);
+
+  // Ajouter plus de pairings pour une meilleure expérience utilisateur
+  useEffect(() => {
+    const additionalPairings: ChemicalPairing[] = [
+      {
+        compound1: "Menthol",
+        compound2: "Eucalyptol",
+        compatibilityScore: 88,
+        description: "Duo rafraîchissant menthe-eucalyptus",
+        flavorProfile: ["Frais", "Mentholé", "Aromatique"],
+        scientificExplanation: "Ces deux composés activent les récepteurs TRPM8 responsables de la sensation de fraîcheur.",
+        culinaryApplications: ["Desserts glacés", "Boissons fraîches", "Sorbets"]
+      },
+      {
+        compound1: "Diacétyle",
+        compound2: "Acide butyrique",
+        compatibilityScore: 82,
+        description: "Profil beurré-fromager",
+        flavorProfile: ["Crémeux", "Beurré", "Fromager"],
+        scientificExplanation: "Le diacétyle apporte des notes de beurre qui complètent les notes fromagères de l'acide butyrique.",
+        culinaryApplications: ["Sauces crémeuses", "Fromages", "Pâtisseries"]
+      },
+      {
+        compound1: "Géraniol",
+        compound2: "Linalol",
+        compatibilityScore: 87,
+        description: "Harmonie florale rose-lavande",
+        flavorProfile: ["Floral", "Délicat", "Aromatique"],
+        scientificExplanation: "Ces monoterpènes créent un bouquet floral complexe qui stimule les récepteurs olfactifs de manière complémentaire.",
+        culinaryApplications: ["Desserts délicats", "Infusions", "Pâtisseries fines"]
+      }
+    ];
+    
+    setChemicalPairings([...chemicalPairings, ...additionalPairings]);
+  }, []);
 
   // Filtrer les pairings si un ingrédient est sélectionné
   const filteredPairings = selectedIngredient 
@@ -95,80 +130,93 @@ export default function ChemicalCompatibilityChart({ selectedIngredient }: Chemi
               <p className="text-sm text-blue-700">
                 La science derrière les saveurs : les composés chimiques des aliments interagissent pour créer des expériences gustatives uniques. 
                 Ces associations sont basées sur des principes scientifiques et des recherches en gastronomie moléculaire.
+                {selectedIngredient && (
+                  <span className="block mt-1 font-medium">
+                    Affichage des compatibilités pour : {selectedIngredient}
+                  </span>
+                )}
               </p>
             </div>
           </div>
         </div>
 
         <div className="space-y-6">
-          {filteredPairings.map((pairing, index) => (
-            <motion.div
-              key={`${pairing.compound1}-${pairing.compound2}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="border rounded-lg overflow-hidden"
-            >
-              <div className="p-4 bg-gray-50 border-b">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-md font-medium text-gray-900">
-                    {pairing.compound1} + {pairing.compound2}
-                  </h3>
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-gray-700 mr-2">Compatibilité:</span>
-                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${
-                          pairing.compatibilityScore > 80 ? 'bg-green-500' : 
-                          pairing.compatibilityScore > 60 ? 'bg-yellow-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${pairing.compatibilityScore}%` }}
-                      />
+          {filteredPairings.length === 0 ? (
+            <div className="text-center py-8">
+              <BeakerIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">Aucune compatibilité trouvée pour cet ingrédient.</p>
+              <p className="text-gray-400 text-sm mt-2">Essayez un autre terme de recherche ou consultez notre base de données complète.</p>
+            </div>
+          ) : (
+            filteredPairings.map((pairing, index) => (
+              <motion.div
+                key={`${pairing.compound1}-${pairing.compound2}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="border rounded-lg overflow-hidden"
+              >
+                <div className="p-4 bg-gray-50 border-b">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-md font-medium text-gray-900">
+                      {pairing.compound1} + {pairing.compound2}
+                    </h3>
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium text-gray-700 mr-2">Compatibilité:</span>
+                      <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full ${
+                            pairing.compatibilityScore > 80 ? 'bg-green-500' : 
+                            pairing.compatibilityScore > 60 ? 'bg-yellow-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${pairing.compatibilityScore}%` }}
+                        />
+                      </div>
+                      <span className="ml-2 text-sm font-medium text-gray-700">{pairing.compatibilityScore}%</span>
                     </div>
-                    <span className="ml-2 text-sm font-medium text-gray-700">{pairing.compatibilityScore}%</span>
                   </div>
+                  <p className="mt-1 text-sm text-gray-600">{pairing.description}</p>
                 </div>
-                <p className="mt-1 text-sm text-gray-600">{pairing.description}</p>
-              </div>
-              
-              <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Profil aromatique</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {pairing.flavorProfile.map(flavor => (
-                        <span 
-                          key={flavor} 
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
-                        >
-                          {flavor}
-                        </span>
-                      ))}
+                
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Profil aromatique</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {pairing.flavorProfile.map(flavor => (
+                          <span 
+                            key={flavor} 
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                          >
+                            {flavor}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Applications culinaires</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {pairing.culinaryApplications.map(app => (
+                          <span 
+                            key={app} 
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                          >
+                            {app}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                   
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Applications culinaires</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {pairing.culinaryApplications.map(app => (
-                        <span 
-                          key={app} 
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                        >
-                          {app}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Explication scientifique</h4>
+                    <p className="text-sm text-gray-600">{pairing.scientificExplanation}</p>
                   </div>
                 </div>
-                
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Explication scientifique</h4>
-                  <p className="text-sm text-gray-600">{pairing.scientificExplanation}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
     </div>

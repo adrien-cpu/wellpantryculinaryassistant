@@ -393,9 +393,9 @@ export default function Dashboard() {
                 <table className="min-w-full border-separate border-spacing-0">
                   <thead>
                     <tr>
-                      <th className="p-3 bg-gray-50 text-left font-semibold w-24">Repas</th>
+                      <th className="p-3 bg-gray-50 text-left font-semibold w-24 text-gray-700">Repas</th>
                       {currentWeek.map((date, index) => (
-                        <th key={index} className="p-3 bg-gray-50 text-center font-semibold">
+                        <th key={index} className="p-3 bg-gray-50 text-center font-semibold text-gray-700">
                           <div className="capitalize">{getDayName(date)}</div>
                           <div className="text-sm font-normal">{formatDisplayDate(date)}</div>
                         </th>
@@ -405,14 +405,14 @@ export default function Dashboard() {
                   <tbody>
                     {['breakfast', 'lunch', 'dinner'].map((mealType, mealIndex) => (
                       <tr key={mealType}>
-                        <td className="p-3 font-medium bg-gray-50">
+                        <td className="p-3 font-medium bg-gray-50 text-gray-700">
                           {mealType === 'breakfast' ? 'Petit-déjeuner' : 
                            mealType === 'lunch' ? 'Déjeuner' : 'Dîner'}
                         </td>
                         {currentWeek.map((date, dateIndex) => {
                           const meal = getMealForDay(date, mealType as any);
                           return (
-                            <td key={dateIndex} className="border p-3 text-center align-middle">
+                            <td key={dateIndex} className="border p-3 text-center align-middle text-gray-700">
                               {meal ? (
                                 <div className="flex flex-col items-center gap-1">
                                   <span className="text-sm font-medium">{meal.name}</span>

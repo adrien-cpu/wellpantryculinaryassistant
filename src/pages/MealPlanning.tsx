@@ -200,14 +200,14 @@ const MealPlanningPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
-                    <table className="min-w-full border-separate border-spacing-0 bg-white rounded-lg shadow text-black">
+                    <table className="min-w-full border-separate border-spacing-0 bg-white rounded-lg shadow">
                       <thead>
                         <tr>
-                          <th className="p-3 bg-gray-50 text-left font-semibold">Repas</th>
+                          <th className="p-3 bg-gray-50 text-left font-semibold text-gray-700">Repas</th>
                           {currentWeek.map((day, index) => (
                             <th
                               key={index}
-                              className="p-3 bg-gray-50 text-center font-semibold capitalize"
+                              className="p-3 bg-gray-50 text-center font-semibold capitalize text-gray-700"
                             >
                               <div>{day.format('dddd')}</div>
                               <div className="text-sm font-normal">{day.format('DD/MM')}</div>
@@ -218,7 +218,7 @@ const MealPlanningPage = () => {
                       <tbody>
                         {['breakfast', 'lunch', 'dinner'].map((mealType) => (
                           <tr key={mealType}>
-                            <td className="p-3 font-medium bg-gray-50">
+                            <td className="p-3 font-medium bg-gray-50 text-gray-700">
                               {mealType === 'breakfast' ? 'Petit-déjeuner' : 
                                mealType === 'lunch' ? 'Déjeuner' : 'Dîner'}
                             </td>
@@ -229,7 +229,7 @@ const MealPlanningPage = () => {
                               return (
                                 <td
                                   key={dayIndex}
-                                  className="border p-3 text-center align-middle"
+                                  className="border p-3 text-center align-middle text-gray-700"
                                 >
                                   {meal ? (
                                     <div className="flex flex-col items-center gap-1">

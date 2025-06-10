@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu, 
@@ -27,10 +27,16 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Fermer le menu lors d'un changement de route
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-wp-gray-dark border-b border-wp-gray shadow-sm">
@@ -68,12 +74,12 @@ const Navbar: React.FC = () => {
                     </svg>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
+                <DropdownMenuContent align="end" className="w-[200px] max-h-[80vh] overflow-y-auto">
                   {navigationLinks.map((link) => (
                     <DropdownMenuItem key={link.href} className="cursor-pointer">
                       <Link 
                         to={link.href} 
-                        className="w-full"
+                        className="w-full flex items-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.icon}
@@ -81,6 +87,35 @@ const Navbar: React.FC = () => {
                       </Link>
                     </DropdownMenuItem>
                   ))}
+                  {user && (
+                    <>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Link 
+                          to="/profil" 
+                          className="w-full flex items-center"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <User className="w-6 h-6 mr-2" />
+                          Profil
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Link 
+                          to="/UserSettings" 
+                          className="w-full flex items-center"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Sparkles className="w-6 h-6 mr-2" />
+                          Paramètres
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <div className="w-full">
+                          <LogoutButton />
+                        </div>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

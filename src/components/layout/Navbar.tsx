@@ -9,18 +9,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/AuthContext";
-import { Home, BookOpen, Leaf, Calendar, ShoppingBasket, Map, Sparkles, User, FlaskConical } from "lucide-react";
+import { Home, BookOpen, Leaf, Calendar, ShoppingBasket, Map, Sparkles, User, FlaskConical, LogOut, Settings } from "lucide-react";
 import LogoutButton from "@/components/LogoutButton";
 
 const navigationLinks = [
-  { name: "Tableau de bord", href: "/dashboard", icon: <Home className="w-6 h-6 mr-2" /> },
-  { name: "Recettes", href: "/recipes", icon: <BookOpen className="w-6 h-6 mr-2" /> },
-  { name: "Potager", href: "/garden", icon: <Leaf className="w-6 h-6 mr-2" /> },
-  { name: "Planification", href: "/meal-planning", icon: <Calendar className="w-6 h-6 mr-2" /> },
-  { name: "Garde-manger", href: "/pantry", icon: <ShoppingBasket className="w-6 h-6 mr-2" /> },
-  { name: "Carte", href: "/map", icon: <Map className="w-6 h-6 mr-2" /> },
-  { name: "Gastronomie", href: "/molecular", icon: <FlaskConical className="w-6 h-6 mr-2" /> },
-  { name: "Fonctionnalités", href: "/features", icon: <Sparkles className="w-6 h-6 mr-2" /> },
+  { name: "Tableau de bord", href: "/dashboard", icon: <Home className="w-5 h-5 mr-2" /> },
+  { name: "Recettes", href: "/recipes", icon: <BookOpen className="w-5 h-5 mr-2" /> },
+  { name: "Potager", href: "/garden", icon: <Leaf className="w-5 h-5 mr-2" /> },
+  { name: "Planification", href: "/meal-planning", icon: <Calendar className="w-5 h-5 mr-2" /> },
+  { name: "Garde-manger", href: "/pantry", icon: <ShoppingBasket className="w-5 h-5 mr-2" /> },
+  { name: "Carte", href: "/map", icon: <Map className="w-5 h-5 mr-2" /> },
+  { name: "Gastronomie", href: "/molecular", icon: <FlaskConical className="w-5 h-5 mr-2" /> },
+  { name: "Fonctionnalités", href: "/features", icon: <Sparkles className="w-5 h-5 mr-2" /> },
 ];
 
 const Navbar: React.FC = () => {
@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
                           className="w-full flex items-center"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <User className="w-6 h-6 mr-2" />
+                          <User className="w-5 h-5 mr-2" />
                           Profil
                         </Link>
                       </DropdownMenuItem>
@@ -105,7 +105,7 @@ const Navbar: React.FC = () => {
                           className="w-full flex items-center"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <Sparkles className="w-6 h-6 mr-2" />
+                          <Settings className="w-5 h-5 mr-2" />
                           Paramètres
                         </Link>
                       </DropdownMenuItem>
@@ -120,41 +120,44 @@ const Navbar: React.FC = () => {
               </DropdownMenu>
             </div>
           ) : (
-            <nav className="flex items-center space-x-6">
-              {user && navigationLinks.map((link) => (
-                <NavLink
-                  key={link.href}
-                  to={link.href}
-                  className={({ isActive }) =>
-                    `flex items-center text-base transition-colors px-2 py-1 rounded 
-                    ${isActive 
-                      ? "bg-wp-green-light text-wp-green-dark font-bold" 
-                      : "text-wp-gray-dark hover:text-wp-green dark:text-wp-gray-light dark:hover:text-wp-green"}`
-                  }
-                  style={{ minWidth: 0 }}
-                >
-                  {link.icon}
-                  <span className="whitespace-nowrap">{link.name}</span>
-                </NavLink>
-              ))}
+            <nav className="flex items-center space-x-4">
+              {user && (
+                <div className="flex items-center space-x-4 overflow-x-auto max-w-[calc(100vw-200px)]">
+                  {navigationLinks.map((link) => (
+                    <NavLink
+                      key={link.href}
+                      to={link.href}
+                      className={({ isActive }) =>
+                        `flex items-center text-sm transition-colors px-2 py-1 rounded whitespace-nowrap
+                        ${isActive 
+                          ? "bg-wp-green-light text-wp-green-dark font-bold" 
+                          : "text-wp-gray-dark hover:text-wp-green dark:text-wp-gray-light dark:hover:text-wp-green"}`
+                      }
+                    >
+                      {link.icon}
+                      <span>{link.name}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              )}
               
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center focus:outline-none">
-                      <User className="w-6 h-6 mr-2" />
+                    <button className="flex items-center focus:outline-none ml-4">
+                      <User className="w-5 h-5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
                       <Link to="/profil" className="flex items-center">
-                        <User className="w-5 h-5 mr-2" />
+                        <User className="w-4 h-4 mr-2" />
                         Profil
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/UserSettings" className="flex items-center">
-                        <Sparkles className="w-5 h-5 mr-2" />
+                        <Settings className="w-4 h-4 mr-2" />
                         Paramètres
                       </Link>
                     </DropdownMenuItem>
@@ -164,7 +167,7 @@ const Navbar: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-wp-green-dark">
+                <Button asChild size="sm" variant="outline" className="border-white text-white hover:bg-wp-green-dark">
                   <Link to="/login">Connexion</Link>
                 </Button>
               )}

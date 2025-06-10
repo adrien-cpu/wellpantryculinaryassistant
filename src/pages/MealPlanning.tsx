@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,7 @@ import WeeklyVerticalView from "@/components/meal-planning/WeeklyVerticalView";
 import DailyView from "@/components/meal-planning/DailyView";
 import type { DayMeals } from "@/types/meal-planning";
 import dayjs from "dayjs";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 
 const MealPlanningPage = () => {
   const { toast } = useToast();
@@ -32,12 +33,27 @@ const MealPlanningPage = () => {
   const [view, setView] = useState<"month" | "week" | "day">("week");
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDay, setSelectedDay] = useState(dayjs().format("YYYY-MM-DD"));
+  const [currentWeek, setCurrentWeek] = useState<dayjs.Dayjs[]>([]);
 
   const [editingMeal, setEditingMeal] = useState<{
     day: string;
     type: 'breakfast' | 'lunch' | 'dinner';
     meal: { name: string; description?: string };
   } | null>(null);
+
+  // Générer les dates de la semaine courante
+  useEffect(() => {
+    const getWeekDates = (date: dayjs.Dayjs) => {
+      const startOfWeek = date.startOf('week');
+      const weekDates = [];
+      for (let i = 0; i < 7; i++) {
+        weekDates.push(startOfWeek.add(i, 'day'));
+      }
+      return weekDates;
+    };
+    
+    setCurrentWeek(getWeekDates(currentDate));
+  }, [currentDate]);
 
   const showComingSoon = () => {
     toast({
@@ -73,6 +89,18 @@ const MealPlanningPage = () => {
       updateMeal(editingMeal.day, editingMeal.type, updatedMeal);
       setEditingMeal(null);
     }
+  };
+
+  const navigateToPreviousWeek = () => {
+    setCurrentDate(currentDate.subtract(1, 'week'));
+  };
+
+  const navigateToNextWeek = () => {
+    setCurrentDate(currentDate.add(1, 'week'));
+  };
+
+  const formatDate = (date: dayjs.Dayjs) => {
+    return date.format('DD MMM');
   };
 
   return (
@@ -117,37 +145,123 @@ const MealPlanningPage = () => {
             <TabsContent value="planning">
               <Card>
                 <CardHeader>
-                  <CardTitle>Planning</CardTitle>
-                  <MealPlannerCalendar
-                    view={view}
-                    setView={setView}
-                  />
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <CardTitle className="flex items-center">
+                      <CalendarIcon className="w-5 h-5 mr-2" />
+                      Planning
+                    </CardTitle>
+                    <div className="flex items-center space-x-4 mt-4 md:mt-0">
+                      <Button variant="outline" size="sm" onClick={navigateToPreviousWeek}>
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">Semaine précédente</span>
+                      </Button>
+                      <span className="text-sm font-medium">
+                        Semaine du {formatDate(currentWeek[0])} au {formatDate(currentWeek[6])}
+                      </span>
+                      <Button variant="outline" size="sm" onClick={navigateToNextWeek}>
+                        <span className="hidden sm:inline">Semaine suivante</span>
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex space-x-4 mt-4">
+                    <Button 
+                      variant={view === "day" ? "default" : "outline"} 
+                      size="sm" 
+                      onClick={() => setView("day")}
+                      className={view === "day" ? "bg-wp-green" : ""}
+                    >
+                      Jour
+                    </Button>
+                    <Button 
+                      variant={view === "week" ? "default" : "outline"} 
+                      size="sm" 
+                      onClick={() => setView("week")}
+                      className={view === "week" ? "bg-wp-green" : ""}
+                    >
+                      Semaine
+                    </Button>
+                    <Button 
+                      variant={view === "month" ? "default" : "outline"} 
+                      size="sm" 
+                      onClick={() => setView("month")}
+                      className={view === "month" ? "bg-wp-green" : ""}
+                    >
+                      Mois
+                    </Button>
+                  </div>
                   <CardDescription>
                     Planifiez vos repas pour la semaine, le mois ou la journée et suivez votre nutrition quotidienne
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {view === "month" && (
-                    <MonthlyCalendar
-                      currentDate={currentDate}
-                      meals={meals}
-                      onEditMeal={handleEditMeal}
-                    />
-                  )}
-                  {view === "week" && (
-                    <WeeklyVerticalView
-                      weekDays={weekDays}
-                      meals={meals}
-                      onEditMeal={handleEditMeal}
-                    />
-                  )}
-                  {view === "day" && (
-                    <DailyView
-                      date={selectedDay}
-                      meals={meals}
-                      onEditMeal={handleEditMeal}
-                    />
-                  )}
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full border-separate border-spacing-0 bg-white rounded-lg shadow text-black">
+                      <thead>
+                        <tr>
+                          <th className="p-3 bg-gray-50 text-left font-semibold">Repas</th>
+                          {currentWeek.map((day, index) => (
+                            <th
+                              key={index}
+                              className="p-3 bg-gray-50 text-center font-semibold capitalize"
+                            >
+                              <div>{day.format('dddd')}</div>
+                              <div className="text-sm font-normal">{day.format('DD/MM')}</div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {['breakfast', 'lunch', 'dinner'].map((mealType) => (
+                          <tr key={mealType}>
+                            <td className="p-3 font-medium bg-gray-50">
+                              {mealType === 'breakfast' ? 'Petit-déjeuner' : 
+                               mealType === 'lunch' ? 'Déjeuner' : 'Dîner'}
+                            </td>
+                            {currentWeek.map((day, dayIndex) => {
+                              const dateStr = day.format('YYYY-MM-DD');
+                              const meal = meals[dateStr]?.[mealType as keyof DayMeals];
+                              
+                              return (
+                                <td
+                                  key={dayIndex}
+                                  className="border p-3 text-center align-middle"
+                                >
+                                  {meal ? (
+                                    <div className="flex flex-col items-center gap-1">
+                                      <span>{meal.name}</span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleEditMeal(dateStr, mealType as any)
+                                        }
+                                        className="text-xs text-wp-green-dark hover:text-wp-green"
+                                      >
+                                        Modifier
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() =>
+                                        handleEditMeal(dateStr, mealType as any)
+                                      }
+                                      className="text-2xl text-gray-400 hover:text-wp-green"
+                                      aria-label="Ajouter un repas"
+                                    >
+                                      +
+                                    </Button>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

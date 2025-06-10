@@ -156,7 +156,11 @@ const MealPlanningPage = () => {
                         <span className="hidden sm:inline">Semaine précédente</span>
                       </Button>
                       <span className="text-sm font-medium">
-                        Semaine du {formatDate(currentWeek[0])} au {formatDate(currentWeek[6])}
+                        {currentWeek.length >= 7 ? (
+                          `Semaine du ${formatDate(currentWeek[0])} au ${formatDate(currentWeek[6])}`
+                        ) : (
+                          "Chargement..."
+                        )}
                       </span>
                       <Button variant="outline" size="sm" onClick={navigateToNextWeek}>
                         <span className="hidden sm:inline">Semaine suivante</span>

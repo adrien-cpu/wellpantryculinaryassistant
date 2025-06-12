@@ -19,7 +19,7 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
     const loadModel = async () => {
       try {
         const mobilenetModel = await tf.loadGraphModel(
-          'https://tfhub.dev/google/tfjs-models/savedmodel/mobilenet_v2_140_224/classification/3/default/1', // Example MobileNetV2 URL
+          'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_140_224/classification/3/default/1', // Fixed URL
           { fromTFHub: true }
         );
         setModel(mobilenetModel);
@@ -27,6 +27,7 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
       } catch (error) {
         setModelError('Failed to load the recognition model.'); // Set error state
         console.error('Error loading the model:', error);
+        setModelLoading(false);
       }
     };
     loadModel();

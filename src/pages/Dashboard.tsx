@@ -26,7 +26,7 @@ export default function Dashboard() {
   const [recipesCount, setRecipesCount] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
   // Initialize currentWeek with actual dates instead of empty array
-  const [currentWeek, setCurrentWeek] = useState<Date[]>(() => getWeekDates(new Date()));
+  const [currentWeek, setCurrentWeek] = useState<Date[]>(getWeekDates(new Date()));
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Données simulées pour les statistiques
@@ -99,28 +99,38 @@ export default function Dashboard() {
 
   // Update currentWeek when currentDate changes
   useEffect(() => {
-    setCurrentWeek(getWeekDates(new Date(currentDate)));
+    // Create a new Date object to avoid mutating the original
+    const newDate = new Date(currentDate.getTime());
+    setCurrentWeek(getWeekDates(newDate));
   }, [currentDate]);
 
   useEffect(() => {
     async function fetchRecipes() {
-      const { count } = await supabase
-        .from("recipes")
-        .select("*", { count: "exact", head: true });
-      setRecipesCount(count || 0);
+      try {
+        const { count } = await supabase
+          .from("recipes")
+          .select("*", { count: "exact", head: true });
+        setRecipesCount(count || 0);
+      } catch (error) {
+        console.error("Error fetching recipes:", error);
+        setRecipesCount(0);
+      }
     }
     fetchRecipes();
   }, []);
 
   const formatDate = (date: Date) => {
+    if (!date) return "";
     return date.toISOString().split('T')[0];
   };
 
   const formatDisplayDate = (date: Date) => {
+    if (!date) return "";
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   };
 
   const getDayName = (date: Date) => {
+    if (!date) return "";
     return date.toLocaleDateString('fr-FR', { weekday: 'long' });
   };
 
@@ -137,6 +147,7 @@ export default function Dashboard() {
   };
 
   const getMealForDay = (date: Date, mealType: 'breakfast' | 'lunch' | 'dinner') => {
+    if (!date) return null;
     const dateStr = formatDate(date);
     return mealPlan[dateStr]?.[mealType] || null;
   };

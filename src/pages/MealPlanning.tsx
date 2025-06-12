@@ -100,6 +100,12 @@ const MealPlanningPage = () => {
   };
 
   const formatDate = (date: dayjs.Dayjs) => {
+    if (!date) return "";
+    return date.format('YYYY-MM-DD');
+  };
+
+  const formatDisplayDate = (date: dayjs.Dayjs) => {
+    if (!date) return "";
     return date.format('DD MMM');
   };
 
@@ -157,7 +163,7 @@ const MealPlanningPage = () => {
                       </Button>
                       <span className="text-sm font-medium">
                         {currentWeek.length >= 7 ? (
-                          `Semaine du ${formatDate(currentWeek[0])} au ${formatDate(currentWeek[6])}`
+                          `Semaine du ${formatDisplayDate(currentWeek[0])} au ${formatDisplayDate(currentWeek[6])}`
                         ) : (
                           "Chargement..."
                         )}
@@ -209,8 +215,8 @@ const MealPlanningPage = () => {
                               key={index}
                               className="p-3 bg-gray-50 text-center font-semibold capitalize text-gray-700"
                             >
-                              <div>{day.format('dddd')}</div>
-                              <div className="text-sm font-normal">{day.format('DD/MM')}</div>
+                              <div>{day ? day.format('dddd') : ''}</div>
+                              <div className="text-sm font-normal">{day ? day.format('DD/MM') : ''}</div>
                             </th>
                           ))}
                         </tr>
@@ -223,6 +229,8 @@ const MealPlanningPage = () => {
                                mealType === 'lunch' ? 'Déjeuner' : 'Dîner'}
                             </td>
                             {currentWeek.map((day, dayIndex) => {
+                              if (!day) return <td key={dayIndex}></td>;
+                              
                               const dateStr = day.format('YYYY-MM-DD');
                               const meal = meals[dateStr]?.[mealType as keyof DayMeals];
                               

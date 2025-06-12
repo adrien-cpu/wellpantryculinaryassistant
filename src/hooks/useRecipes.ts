@@ -4,6 +4,7 @@ import { mockRecipes } from '@/data/mockRecipes';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 import { RecipeFilters } from '@/components/recipes/RecipeFilters';
+import { useRecipeFavorites } from './useRecipeFavorites';
 
 export const useRecipes = () => {
   const { toast } = useToast();
@@ -18,6 +19,9 @@ export const useRecipes = () => {
   });
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  
+  // Use the favorites hook
+  const { favorites, toggleFavorite, isFavorite } = useRecipeFavorites();
 
   // Fetch recipes from Supabase or use mock data
   useEffect(() => {
@@ -33,24 +37,40 @@ export const useRecipes = () => {
         if (error) {
           console.error('Error fetching recipes from Supabase:', error);
           // Fall back to mock data
-          setRecipes(mockRecipes);
+          const recipesWithFavorites = mockRecipes.map(recipe => ({
+            ...recipe,
+            isFavorite: isFavorite(recipe.id)
+          }));
+          setRecipes(recipesWithFavorites);
         } else if (data && data.length > 0) {
-          // Map Supabase data to Recipe type if needed
-          setRecipes(data as Recipe[]);
+          // Map Supabase data to Recipe type and add favorite status
+          const recipesWithFavorites = data.map(recipe => ({
+            ...recipe,
+            isFavorite: isFavorite(recipe.id)
+          }));
+          setRecipes(recipesWithFavorites as Recipe[]);
         } else {
           // If no data in Supabase, use mock data
-          setRecipes(mockRecipes);
+          const recipesWithFavorites = mockRecipes.map(recipe => ({
+            ...recipe,
+            isFavorite: isFavorite(recipe.id)
+          }));
+          setRecipes(recipesWithFavorites);
         }
       } catch (error) {
         console.error('Error in fetchRecipes:', error);
-        setRecipes(mockRecipes);
+        const recipesWithFavorites = mockRecipes.map(recipe => ({
+          ...recipe,
+          isFavorite: isFavorite(recipe.id)
+        }));
+        setRecipes(recipesWithFavorites);
       } finally {
         setLoading(false);
       }
     };
 
     fetchRecipes();
-  }, []);
+  }, [favorites, isFavorite]);
 
   // Filter recipes based on search term and filters
   const filteredRecipes = useMemo(() => {
@@ -132,16 +152,21 @@ export const useRecipes = () => {
         setSelectedRecipe({ ...selectedRecipe, isFavorite });
       }
 
-      // In a real app, you would update the database
-      // For now, just show a toast notification
-      toast({
-        title: isFavorite ? "Ajouté aux favoris" : "Retiré des favoris",
-        description: isFavorite 
-          ? "La recette a été ajoutée à vos favoris" 
-          : "La recette a été retirée de vos favoris",
-        duration: 3000,
-      });
+      // Update in database via the favorites hook
+      const success = await toggleFavorite(id, isFavorite);
       
+      if (!success) {
+        // Revert the change if the database update failed
+        setRecipes(prevRecipes => 
+          prevRecipes.map(recipe => 
+            recipe.id === id ? { ...recipe, isFavorite: !isFavorite } : recipe
+          )
+        );
+        
+        if (selectedRecipe && selectedRecipe.id === id) {
+          setSelectedRecipe({ ...selectedRecipe, isFavorite: !isFavorite });
+        }
+      }
     } catch (error) {
       console.error('Error toggling favorite:', error);
       toast({

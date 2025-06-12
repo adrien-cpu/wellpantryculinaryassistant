@@ -6,6 +6,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 import RecipeCard from "@/components/recipes/RecipeCard";
 import RecipeFilters from "@/components/recipes/RecipeFilters";
 import RecipeDetail from "@/components/recipes/RecipeDetail";
+import RecipeCollection from "@/components/recipes/RecipeCollection";
 import { useRecipes } from "@/hooks/useRecipes";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import GenerationOptions from "@/components/meal-planning/GenerationOptions";
@@ -74,6 +75,16 @@ const RecipesPage = () => {
                 Générer avec l'IA
               </Button>
             </div>
+          </div>
+          
+          {/* Section des collections avec onglet Favoris */}
+          <div className="mb-8">
+            <RecipeCollection 
+              recipes={recipes}
+              onViewRecipe={handleViewRecipe}
+              onToggleFavorite={handleToggleFavorite}
+              onCreateCollection={showComingSoon}
+            />
           </div>
           
           <RecipeFilters

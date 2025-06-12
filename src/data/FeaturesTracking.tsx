@@ -35,7 +35,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Reconnaissance d'images",
         description: "Identifiez les aliments par photo",
-        implemented: true,
+        implemented: false,
         details: [
           "Utilisation de TensorFlow.js pour la reconnaissance d'images",
           "Identification des aliments à partir de photos prises par l'utilisateur",
@@ -85,7 +85,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Synchronisation avec listes de courses",
         description: "Intégration avec la planification des repas et les listes de courses",
-        implemented: true,
+        implemented: false,
         details: [
           "Génération automatique de listes de courses basées sur les recettes planifiées",
           "Mise à jour du garde-manger après l'achat des ingrédients",
@@ -111,7 +111,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Génération de menus",
         description: "Obtenez des suggestions basées sur vos préférences",
-        implemented: true,
+        implemented: false,
         details: [
           "Génération automatique de menus équilibrés",
           "Personnalisation selon les préférences alimentaires et restrictions",
@@ -121,7 +121,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Liste de courses automatique",
         description: "Générez une liste à partir de vos menus planifiés",
-        implemented: true,
+        implemented: false,
         details: [
           "Création automatique de listes de courses basées sur les repas planifiés",
           "Regroupement des ingrédients par catégorie",
@@ -141,7 +141,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Adaptation aux restrictions alimentaires",
         description: "Planification adaptée à vos besoins spécifiques",
-        implemented: true,
+        implemented: false,
         details: [
           "Prise en compte des allergies et intolérances",
           "Filtrage des recettes selon les régimes alimentaires",
@@ -151,7 +151,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Planification budgétaire",
         description: "Estimez le coût de vos repas",
-        implemented: true,
+        implemented: false,
         details: [
           "Estimation du coût des ingrédients",
           "Suggestions pour optimiser le budget",
@@ -187,7 +187,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Génération par IA",
         description: "Créez des recettes personnalisées avec l'IA",
-        implemented: true,
+        implemented: false,
         details: [
           "Génération de recettes basées sur les ingrédients disponibles",
           "Adaptation aux préférences et restrictions alimentaires",
@@ -197,7 +197,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Évaluation et commentaires",
         description: "Partagez votre expérience avec la communauté",
-        implemented: true,
+        implemented: false,
         details: [
           "Système de notation des recettes",
           "Commentaires et retours d'expérience",
@@ -227,7 +227,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Adaptation des portions",
         description: "Ajustez automatiquement les quantités",
-        implemented: true,
+        implemented: false,
         details: [
           "Calcul automatique des quantités selon le nombre de personnes",
           "Conversion entre différentes unités de mesure",
@@ -283,7 +283,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Journal de jardinage",
         description: "Documentez l'évolution de vos plantes avec photos",
-        implemented: true,
+        implemented: false,
         details: [
           "Suivi photographique de la croissance",
           "Notes et observations",
@@ -293,7 +293,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Identification des problèmes",
         description: "Diagnostiquez et traitez les maladies et parasites",
-        implemented: true,
+        implemented: false,
         details: [
           "Reconnaissance visuelle des problèmes courants",
           "Suggestions de traitements naturels",
@@ -319,7 +319,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Contribution",
         description: "Ajoutez vos propres découvertes",
-        implemented: true,
+        implemented: false,
         details: [
           "Ajout de nouveaux points d'intérêt",
           "Mise à jour des informations existantes",
@@ -329,7 +329,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Évaluations",
         description: "Partagez votre expérience des lieux visités",
-        implemented: true,
+        implemented: false,
         details: [
           "Système de notation des lieux",
           "Commentaires et avis détaillés",
@@ -339,7 +339,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Itinéraires",
         description: "Créez des parcours gourmands dans votre ville",
-        implemented: true,
+        implemented: false,
         details: [
           "Création d'itinéraires personnalisés",
           "Optimisation des trajets",
@@ -349,7 +349,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Événements locaux",
         description: "Découvrez les événements gastronomiques près de chez vous",
-        implemented: true,
+        implemented: false,
         details: [
           "Calendrier des marchés et foires",
           "Ateliers et cours de cuisine",
@@ -395,7 +395,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Laboratoire virtuel",
         description: "Simulez des expériences culinaires avant de les réaliser",
-        implemented: true,
+        implemented: false,
         details: [
           "Simulation d'interactions entre ingrédients",
           "Prédiction des résultats d'expériences",
@@ -421,7 +421,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Planification d'événements",
         description: "Organisez des repas partagés",
-        implemented: true,
+        implemented: false,
         details: [
           "Création et gestion d'événements culinaires",
           "Planification du menu et des activités",
@@ -431,7 +431,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Gestion des invitations",
         description: "Invitez des amis et suivez leurs réponses",
-        implemented: true,
+        implemented: false,
         details: [
           "Envoi d'invitations personnalisées",
           "Suivi des réponses et confirmations",
@@ -441,7 +441,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Coordination des contributions",
         description: "Organisez qui apporte quoi",
-        implemented: true,
+        implemented: false,
         details: [
           "Assignation des plats et boissons",
           "Équilibrage des contributions",
@@ -451,7 +451,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Évaluations post-événement",
         description: "Partagez vos impressions après l'événement",
-        implemented: true,
+        implemented: false,
         details: [
           "Système de notation des événements",
           "Commentaires et retours d'expérience",
@@ -461,7 +461,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Galerie de souvenirs",
         description: "Partagez les photos de vos événements culinaires",
-        implemented: true,
+        implemented: false,
         details: [
           "Album photo collaboratif",
           "Partage des moments forts",
@@ -497,7 +497,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Suggestions personnalisées",
         description: "Recevez du contenu adapté à vos habitudes",
-        implemented: true,
+        implemented: false,
         details: [
           "Recommandations basées sur l'historique d'utilisation",
           "Suggestions adaptées aux préférences alimentaires",
@@ -507,7 +507,7 @@ export const featuresData: FeatureCategory[] = [
       {
         name: "Synchronisation multi-appareils",
         description: "Retrouvez vos données sur tous vos appareils",
-        implemented: true,
+        implemented: false,
         details: [
           "Synchronisation en temps réel entre appareils",
           "Sauvegarde sécurisée dans le cloud",

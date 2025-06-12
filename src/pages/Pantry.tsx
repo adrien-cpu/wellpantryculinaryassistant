@@ -14,7 +14,6 @@ import { PantryItem } from "@/types/pantry"; // Assuming PantryItem type is defi
 
 const PantryPage = () => {
   const {
-
     selectedStorage,
     isFormOpen,
     editingItem,
@@ -45,8 +44,7 @@ const PantryPage = () => {
     handleDeleteItem,
     handleSuggestionAction,
     setIsFormOpen
-
-} = usePantryData();
+  } = usePantryData();
 
   const [isScanning, setIsScanning] = React.useState(false);
   const [isRecognizingImage, setIsRecognizingImage] = React.useState(false);
@@ -55,10 +53,12 @@ const PantryPage = () => {
   const handleBarcodeDetected = (productData: any) => {
     if (productData) {
       // Set the product data as the initial data for the form
-      // Map productData to a Partial<PantryItem>
       const initialData: Partial<PantryItem> = {
-        name: productData.name || 'Scanned Item', // Assuming productData has a name property
-        // Add other mappings here if available from productData
+        name: productData.name || 'Produit scanné',
+        category: productData.category || 'Divers',
+        expiryDate: productData.expirationDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR'),
+        quantity: productData.quantity || '1',
+        storageType: 'cabinet'
       };
       setInitialFormData(initialData);
       setIsFormOpen(true); // Open the form
@@ -70,12 +70,14 @@ const PantryPage = () => {
     // Map foodItem to a Partial<PantryItem>
     const initialData: Partial<PantryItem> = {
       name: foodItem.name,
-      category: foodItem.category,
-      // Add other default values or mappings if needed
+      category: foodItem.category || 'Divers',
+      expiryDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR'),
+      quantity: '1',
+      storageType: 'fridge'
     };
     setInitialFormData(initialData);
     setIsFormOpen(true); // Open the form
- setIsRecognizingImage(false); // Close the image recognition component
+    setIsRecognizingImage(false); // Close the image recognition component
   };
 
   return (
@@ -84,8 +86,11 @@ const PantryPage = () => {
         <div className="container mx-auto px-4">
           <PantryHeader 
             onShowComingSoon={showComingSoon} 
-            onAddItem={() => handleAddItem()}
- onToggleImageRecognition={() => setIsRecognizingImage(!isRecognizingImage)}
+            onAddItem={() => {
+              setInitialFormData(null);
+              handleAddItem();
+            }}
+            onToggleImageRecognition={() => setIsRecognizingImage(!isRecognizingImage)}
             onToggleScan={() => setIsScanning(!isScanning)}
           />
           
@@ -126,7 +131,6 @@ const PantryPage = () => {
             />
             
             <PantryStats
-
               itemsCount={pantryItems.length}
               fridgeCount={fridgeCount}
               cabinetCount={cabinetCount}
@@ -139,40 +143,43 @@ const PantryPage = () => {
       </section>
       
       <PantryItemForm
-        open={isFormOpen || !!initialFormData} // Keep form open if initial data is set
-        onClose={() => setIsFormOpen(false)}
+        open={isFormOpen}
+        onClose={() => {
+          setIsFormOpen(false);
+          setInitialFormData(null);
+        }}
         onSave={handleSaveItem}
- initialData={initialFormData}
+        initialData={initialFormData || editingItem}
       />
 
       <Drawer open={isScanning} onOpenChange={setIsScanning}>
-        <DrawerContent>
-          <DrawerHeader className="p-4"> {/* Add padding */}
-            <DrawerTitle>Scan Barcode</DrawerTitle>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
+          <DrawerHeader className="p-4">
+            <DrawerTitle>Scanner un code-barres</DrawerTitle>
           </DrawerHeader>
-          {/* Add px-4 for horizontal padding to the scanner content */}
-          <div className="p-4"> 
-            <BarcodeScanner onBarcodeDetected={handleBarcodeDetected} />
+          <div className="px-4 pb-6">
+            <BarcodeScanner 
+              onBarcodeDetected={handleBarcodeDetected} 
+              onClose={() => setIsScanning(false)}
+            />
           </div>
         </DrawerContent>
       </Drawer>
 
       <Drawer open={isRecognizingImage} onOpenChange={setIsRecognizingImage}>
-        <DrawerContent>
-          {/* Add padding to the header */}
-          <DrawerHeader className="p-4"> 
-            <DrawerTitle>Image Recognition</DrawerTitle>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
+          <DrawerHeader className="p-4">
+            <DrawerTitle>Reconnaissance d'image</DrawerTitle>
           </DrawerHeader>
-          {/* Add p-4 for padding to the recognizer content */}
-          <div className="p-4">
+          <div className="px-4 pb-6">
             <ImageRecognizer 
-  isOpen={isRecognizingImage}
-  onImageRecognized={handleImageRecognized}
-/>
+              isOpen={isRecognizingImage}
+              onImageRecognized={handleImageRecognized}
+              onClose={() => setIsRecognizingImage(false)}
+            />
           </div>
         </DrawerContent>
       </Drawer>
-
     </Layout>
   );
 };

@@ -245,3 +245,5 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
 };
 
 export default RecipeFilters;
+
+export { RecipeFilters }

@@ -6,12 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import RecipeWidget from "@/components/dashboard/RecipeWidget";
+import { mockRecipes } from "@/data/mockRecipes";
+import { Recipe } from "@/types/recipe";
+import RecipeDetail from "@/components/recipes/RecipeDetail";
 
 // Helper function to generate week dates
 const getWeekDates = (date: Date) => {
-  const day = date.getDay();
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajuster si dimanche
-  const monday = new Date(date.setDate(diff));
+  // Create a copy of the date to avoid mutating the original
+  const dateCopy = new Date(date.getTime());
+  const day = dateCopy.getDay();
+  const diff = dateCopy.getDate() - day + (day === 0 ? -6 : 1); // Ajuster si dimanche
+  const monday = new Date(dateCopy.setDate(diff));
   
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
@@ -28,6 +34,8 @@ export default function Dashboard() {
   // Initialize currentWeek with actual dates instead of empty array
   const [currentWeek, setCurrentWeek] = useState<Date[]>(getWeekDates(new Date()));
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [isRecipeDetailOpen, setIsRecipeDetailOpen] = useState(false);
 
   // Données simulées pour les statistiques
   const stats = {
@@ -152,11 +160,19 @@ export default function Dashboard() {
     return mealPlan[dateStr]?.[mealType] || null;
   };
 
+  const handleViewRecipe = (id: string | number) => {
+    const recipe = mockRecipes.find(r => r.id === id);
+    if (recipe) {
+      setSelectedRecipe(recipe);
+      setIsRecipeDetailOpen(true);
+    }
+  };
+
   return (
     <Layout>
       <section className="py-12 bg-wp-gray-light dark:bg-wp-gray-dark">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-wp-green-dark mb-2">Tableau de bord</h1>
+          <h1 className="text-3xl font-bold text-wp-green-dark dark:text-wp-green mb-2">Tableau de bord</h1>
           <p className="text-wp-gray-dark dark:text-wp-gray-light mb-8">
             Retrouvez ici un aperçu de votre activité, vos statistiques et vos accès rapides.
           </p>
@@ -376,6 +392,14 @@ export default function Dashboard() {
             </Card>
           </div>
 
+          {/* Recettes recommandées */}
+          <div className="mb-10">
+            <RecipeWidget 
+              recipes={mockRecipes} 
+              onViewRecipe={handleViewRecipe}
+            />
+          </div>
+
           {/* Calendrier des repas */}
           <Card className="mb-10 border-wp-green-light">
             <CardHeader className="pb-2">
@@ -388,7 +412,7 @@ export default function Dashboard() {
                   <Button variant="outline" size="icon" onClick={navigateToPreviousWeek}>
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm">
+                  <span className="text-sm text-wp-gray-dark dark:text-wp-gray-light">
                     {currentWeek.length > 0 && (
                       <>Semaine du {formatDisplayDate(currentWeek[0])} au {formatDisplayDate(currentWeek[6])}</>
                     )}
@@ -481,6 +505,13 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      {/* Recipe Detail Modal */}
+      <RecipeDetail
+        recipe={selectedRecipe}
+        open={isRecipeDetailOpen}
+        onClose={() => setIsRecipeDetailOpen(false)}
+      />
     </Layout>
   );
 }

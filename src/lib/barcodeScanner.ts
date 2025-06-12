@@ -1,69 +1,49 @@
-import { BrowserMultiFormatReader, DecodeHintType, Result } from '@zxing/library';
-
 /**
- * Global variable to store the current barcode reader instance.
- * This helps in stopping the scanning process when needed.
+ * Mock implementation of barcode scanning functionality.
+ * This file provides simulated barcode scanning capabilities for development and testing.
  */
-let codeReader: BrowserMultiFormatReader | null = null;
 
 /**
- * Scans a barcode from a video stream.
+ * Simulates scanning a barcode from a video stream.
  *
  * @param videoElement - The HTMLVideoElement displaying the video stream.
  * @returns A promise that resolves with the scanned barcode string or null if no barcode is found.
  */
 export function scanBarcode(videoElement: HTMLVideoElement): Promise<string | null> {
-  // If a reader instance already exists, clear it before starting a new scan.
-  if (codeReader) {
-    codeReader.reset();
-    codeReader = null;
-  }
-
-  codeReader = new BrowserMultiFormatReader();
-
   return new Promise((resolve, reject) => {
     try {
-      codeReader!
-        .decodeFromVideoDevice(undefined, videoElement, (result: Result | null, error: Error | null) => {
-          if (result) {
-            console.log('Barcode detected:', result.getText());
-            stopScan(); // Stop scanning after detection
-            resolve(result.getText());
-          }
-          
-          // Nous ne rejetons pas la promesse sur les erreurs de scan normales
-          // car elles se produisent constamment pendant la recherche de codes-barres
-          if (error && error.name !== 'NotFoundException') {
-            console.error("Scanning error:", error);
-          }
-        })
-        .catch((err) => {
-          console.error("Error starting barcode scanner:", err);
-          reject(err);
-        });
+      // Simulate scanning delay
+      setTimeout(() => {
+        // Mock barcode database
+        const mockBarcodes = [
+          '3017620422003', // Nutella
+          '3017620425035', // Pâtes Panzani
+          '3245390096265', // Yaourt Nature Danone
+          '3228857000166', // Lait Demi-écrémé Lactel
+          '3560070976478', // Jus d'orange Carrefour
+          '123456789012'   // Produit Test
+        ];
+        
+        // Randomly select a barcode
+        const randomIndex = Math.floor(Math.random() * mockBarcodes.length);
+        const barcode = mockBarcodes[randomIndex];
+        
+        console.log('Mock barcode detected:', barcode);
+        resolve(barcode);
+      }, 2000); // Simulate 2 second scanning process
     } catch (err) {
-      console.error("Error initializing barcode scanner:", err);
+      console.error("Error in mock barcode scanner:", err);
       reject(err);
     }
-    
-    // Timeout après 15 secondes si aucun code-barres n'est trouvé
-    setTimeout(() => {
-      if (codeReader) {
-        resolve(null);
-      }
-    }, 15000);
   });
 }
 
 /**
  * Stops the current barcode scanning process.
+ * In this mock implementation, this is a no-op function.
  */
 export function stopScan(): void {
-  if (codeReader) {
-    codeReader.reset();
-    codeReader = null;
-    console.log("Barcode scanner stopped.");
-  }
+  console.log("Mock barcode scanner stopped.");
 }
 
 /**
@@ -76,10 +56,10 @@ export function stopScan(): void {
 export async function getProductInfo(barcode: string): Promise<any | null> {
   console.log(`Attempting to get product info for barcode: ${barcode}`);
   
-  // Simuler un délai réseau
+  // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Base de données simulée de produits
+  // Mock product database
   const mockProducts: Record<string, any> = {
     '3017620422003': {
       name: 'Nutella',
@@ -119,13 +99,13 @@ export async function getProductInfo(barcode: string): Promise<any | null> {
     }
   };
 
-  // Vérifier si le code-barres existe dans notre base de données simulée
+  // Check if barcode exists in our mock database
   if (barcode in mockProducts) {
     console.log("Product found:", mockProducts[barcode]);
     return mockProducts[barcode];
   }
   
-  // Pour les codes-barres inconnus, retourner un produit générique
+  // For unknown barcodes, return a generic product
   return {
     name: `Produit (${barcode})`,
     category: 'Divers',

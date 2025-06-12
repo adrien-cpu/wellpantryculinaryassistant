@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Camera, ShieldAlert, XCircle, Loader2, ImageIcon, Check } from "lucide-react";
@@ -14,13 +14,11 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState<'prompt' | 'granted' | 'denied' | 'unknown'>('unknown');
-  const [modelLoading, setModelLoading] = useState(true);
-  const [modelError, setModelError] = useState<string | null>(null);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [recognitionResult, setRecognitionResult] = useState<{ name: string; confidence: number; category?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [useMockRecognition, setUseMockRecognition] = useState(false);
+  const [useMockRecognition, setUseMockRecognition] = useState(true); // Always use mock recognition for now
   
   // Vérifier le statut de la permission caméra au chargement
   useEffect(() => {
@@ -30,6 +28,7 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
           const result = await navigator.permissions.query({ name: 'camera' as PermissionName });
           setPermissionStatus(result.state as 'prompt' | 'granted' | 'denied');
           
+          // Écouter les changements de permission
           result.addEventListener('change', () => {
             setPermissionStatus(result.state as 'prompt' | 'granted' | 'denied');
           });
@@ -40,41 +39,8 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
     };
     
     checkPermission();
-  }, []);
-
-  // Charger le modèle TensorFlow.js ou utiliser le mode mock
-  useEffect(() => {
-    const loadModel = async () => {
-      try {
-        setModelLoading(true);
-        setModelError(null);
-        
-        // Essayer de charger le modèle TensorFlow.js
-        const { loadGraphModel } = await import('@tensorflow/tfjs');
-        
-        // Utiliser une URL plus stable pour MobileNetV2
-        await loadGraphModel(
-          'https://tfhub.dev/tensorflow/tfjs-model/mobilenet_v2_1.0_224/1/default/1'
-        );
-        
-        setModelLoading(false);
-        setUseMockRecognition(false);
-      } catch (error: any) {
-        console.warn('TensorFlow.js model loading failed, using mock recognition:', error);
-        // Basculer vers le mode mock en cas d'échec
-        setUseMockRecognition(true);
-        setModelLoading(false);
-        setModelError(null); // Ne pas afficher d'erreur, utiliser le mode mock
-      }
-    };
     
-    if (isOpen) {
-      loadModel();
-    }
-  }, [isOpen]);
-
-  // Nettoyer les ressources de la caméra lors de la fermeture
-  useEffect(() => {
+    // Nettoyage à la fermeture
     return () => {
       stopCamera();
     };
@@ -83,10 +49,17 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
   const startCamera = async () => {
     setError(null);
     
+    if (useMockRecognition) {
+      // En mode mock, simuler l'activation de la caméra
+      setIsCameraOn(true);
+      setPermissionStatus('granted');
+      return;
+    }
+    
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          facingMode: 'environment',
+          facingMode: 'environment', // Préférer la caméra arrière
           width: { ideal: 1280 },
           height: { ideal: 720 }
         } 
@@ -110,6 +83,11 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
       } else {
         setError(`Erreur lors de l'accès à la caméra: ${err.message}`);
       }
+      
+      // Fallback to mock recognition
+      setUseMockRecognition(true);
+      setIsCameraOn(true);
+      setPermissionStatus('granted');
     }
   };
 
@@ -124,6 +102,13 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
   };
 
   const captureImage = () => {
+    if (useMockRecognition) {
+      // En mode mock, simuler la capture d'image
+      setCapturedImage('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D');
+      stopCamera();
+      return;
+    }
+    
     if (!videoRef.current || !canvasRef.current) return;
     
     const video = videoRef.current;
@@ -199,18 +184,9 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
     setError(null);
     
     try {
-      let result;
-      
-      if (useMockRecognition) {
-        // Utiliser la reconnaissance simulée
-        result = await mockImageRecognition();
-      } else {
-        // Utiliser TensorFlow.js (code original simplifié pour la démo)
-        result = await mockImageRecognition(); // Fallback vers mock même avec TensorFlow
-      }
-      
+      // Toujours utiliser la reconnaissance simulée
+      const result = await mockImageRecognition();
       setRecognitionResult(result);
-      
     } catch (err: any) {
       console.error("Error recognizing image:", err);
       setError(`Erreur lors de la reconnaissance: ${err.message}`);
@@ -232,34 +208,6 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
     setCapturedImage(null);
     setRecognitionResult(null);
   };
-
-  if (modelLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 space-y-4">
-        <Loader2 className="h-8 w-8 animate-spin text-wp-green" />
-        <p className="text-center text-wp-gray-dark dark:text-wp-gray-light">
-          Initialisation du système de reconnaissance...
-        </p>
-      </div>
-    );
-  }
-
-  if (modelError) {
-    return (
-      <div className="p-4">
-        <Alert variant="destructive">
-          <AlertTitle className="flex items-center">
-            <ShieldAlert className="h-4 w-4 mr-2" />
-            Erreur de chargement
-          </AlertTitle>
-          <AlertDescription>{modelError}</AlertDescription>
-        </Alert>
-        <div className="flex justify-end mt-4">
-          <Button variant="outline" onClick={onClose}>Fermer</Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col items-center p-4 space-y-4 w-full">
@@ -292,7 +240,7 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
         </Alert>
       )}
       
-      {permissionStatus === 'denied' ? (
+      {permissionStatus === 'denied' && !useMockRecognition ? (
         <div className="text-center p-4 bg-amber-50 rounded-lg border border-amber-200 w-full">
           <ShieldAlert className="h-8 w-8 text-amber-500 mx-auto mb-2" />
           <h3 className="font-medium text-amber-800 mb-2">Accès à la caméra refusé</h3>
@@ -310,30 +258,30 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
       ) : (
         <>
           <div className="relative w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden">
-            {isCameraOn && !capturedImage && (
-              <video 
-                ref={videoRef} 
-                className="w-full h-full object-cover"
-                playsInline 
-                muted
-              />
-            )}
-            
-            {capturedImage ? (
+            {isCameraOn && !capturedImage ? (
+              useMockRecognition ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-2/3 h-2/3 border-2 border-wp-green rounded-lg opacity-70"></div>
+                  </div>
+                </div>
+              ) : (
+                <video 
+                  ref={videoRef} 
+                  className="w-full h-full object-cover"
+                  playsInline 
+                  muted
+                />
+              )
+            ) : capturedImage ? (
               <img 
                 src={capturedImage} 
                 alt="Captured" 
                 className="w-full h-full object-cover"
               />
-            ) : !isCameraOn && (
+            ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                 <ImageIcon className="h-16 w-16 text-gray-400" />
-              </div>
-            )}
-            
-            {isCameraOn && !capturedImage && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-2/3 h-2/3 border-2 border-wp-green rounded-lg opacity-70"></div>
               </div>
             )}
           </div>

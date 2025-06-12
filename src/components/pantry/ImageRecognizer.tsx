@@ -50,11 +50,9 @@ const ImageRecognizer: React.FC<ImageRecognizerProps> = ({ isOpen, onImageRecogn
         setModelLoading(true);
         setModelError(null);
         
-        // Pour l'exemple, nous utilisons MobileNet, mais dans une application réelle,
-        // vous pourriez utiliser un modèle plus spécifique à la reconnaissance alimentaire
+        // Utiliser une URL plus stable pour MobileNetV2
         const mobilenetModel = await tf.loadGraphModel(
-          'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_100_224/classification/5/default/1',
-          { fromTFHub: true }
+          'https://tfhub.dev/tensorflow/tfjs-model/mobilenet_v2_1.0_224/1/default/1'
         );
         
         setModel(mobilenetModel);

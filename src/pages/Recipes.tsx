@@ -111,6 +111,7 @@ const RecipesPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 {recipes.map((recipe) => {
   console.log("Rendering recipe:", recipe.id);
+  const memoizedRecipes = React.useMemo(() => recipes, [recipes]);
   return (
     <RecipeCard
       key={recipe.id}
@@ -120,7 +121,7 @@ const RecipesPage = () => {
     />
   );
 })}
-const memoizedRecipes = React.useMemo(() => recipes, [recipes]);
+
 
             </div>
           )}

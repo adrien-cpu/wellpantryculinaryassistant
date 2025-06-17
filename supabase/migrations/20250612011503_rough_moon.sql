@@ -20,14 +20,18 @@ CREATE TABLE IF NOT EXISTS recipe_favorites (
 );
 
 -- Add foreign key to recipes table if it exists
-DO $$
-BEGIN
-  IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recipes') THEN
+DO $$ 
+BEGIN 
+  IF NOT EXISTS (
+    SELECT FROM information_schema.constraint_column_usage 
+    WHERE constraint_name = 'recipe_favorites_recipe_id_user_id_key'
+  ) THEN
     ALTER TABLE recipe_favorites 
-    ADD CONSTRAINT recipe_favorites_recipe_id_fkey 
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE;
+    ADD CONSTRAINT recipe_favorites_recipe_id_user_id_key 
+    UNIQUE (recipe_id, user_id);
   END IF;
 END $$;
+
 
 -- Add unique constraint to prevent duplicate favorites
 ALTER TABLE recipe_favorites 

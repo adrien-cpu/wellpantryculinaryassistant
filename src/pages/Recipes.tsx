@@ -120,6 +120,7 @@ const RecipesPage = () => {
     />
   );
 })}
+const memoizedRecipes = React.useMemo(() => recipes, [recipes]);
 
             </div>
           )}
